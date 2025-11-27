@@ -9,6 +9,11 @@ api.onPageChange(() => {
 
   if (!sidebarEnabled) return;
   
+  // Only show sidebar on desktop (screens wider than 1024px) and not on mobile devices
+  if (window.innerWidth <= 1024 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+    return;
+  }
+  
   // Only show sidebar on chat pages
   const isChatPage = window.location.pathname.includes('/chat') || document.querySelector('.full-page-chat, .chat-drawer');
   if (!isChatPage) return;
@@ -28,19 +33,16 @@ api.onPageChange(() => {
     const card = document.createElement('div');
     card.className = 'discord-user-card';
     
-    // Get click position and ensure card stays on screen
     const clickX = event.clientX;
     const clickY = event.clientY;
-    const cardWidth = 500;
-    const cardHeight = 600;
+    const cardWidth = 600;
+    const cardHeight = 400;
     
-    // Position to the left of cursor if too close to right edge
     let left = clickX + 10;
     if (left + cardWidth > window.innerWidth) {
       left = clickX - cardWidth - 10;
     }
     
-    // Position below cursor if room, otherwise above
     let top = clickY + 10;
     if (top + cardHeight > window.innerHeight) {
       top = Math.max(10, clickY - cardHeight - 10);
@@ -57,78 +59,10 @@ api.onPageChange(() => {
     
     ajax("/u/" + username + ".json").then(data => {
       const user = data.user;
-      let avatar = user.avatar_template;
-      if (avatar.startsWith('/')) avatar = window.location.origin + avatar;
-      avatar = avatar.replace('{size}', '256');
-      const joined = new Date(user.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      const avatar = (user.avatar_template.startsWith('/') ? window.location.origin : '') + user.avatar_template.replace('{size}', '256');
       
       const body = card.querySelector('.user-card-body');
-      body.innerHTML = '';
-      const layout = document.createElement('div');
-      layout.className = 'card-layout';
-      const left = document.createElement('div');
-      left.className = 'left-section';
-      left.innerHTML = '<div class="user-card-avatar"><img src="' + avatar + '"><div class="status-badge"></div></div><div class="user-info"><h2 class="display-name">' + (user.name || user.username) + '</h2><p class="username">@' + user.username + '</p>' + (user.title ? '<span class="title-badge">' + user.title + '</span>' : '') + '</div>';
-      
-      const right = document.createElement('div');
-      right.className = 'right-section';
-      if (user.bio_cooked) {
-        const bio = document.createElement('div');
-        bio.className = 'bio';
-        bio.innerHTML = user.bio_cooked;
-        right.appendChild(bio);
-      }
-      const meta = document.createElement('div');
-      meta.className = 'meta-info';
-      meta.innerHTML = '<div class="meta-item">📅 Joined ' + joined + '</div>' + (user.location ? '<div class="meta-item">📍 ' + user.location + '</div>' : '');
-      if (meta.innerHTML) right.appendChild(meta);
-      
-      const stats = document.createElement('div');
-      stats.className = 'stats-grid';
-      stats.innerHTML = '<div class="stat-item"><span class="stat-value">' + (user.post_count || 0) + '</span><span class="stat-label">Posts</span></div><div class="stat-item"><span class="stat-value">' + (user.like_count || 0) + '</span><span class="stat-label">Likes</span></div><div class="stat-item"><span class="stat-value">' + (user.solved_count || 0) + '</span><span class="stat-label">Solutions</span></div>';
-      right.appendChild(stats);
-      
-      if (user.badge_count > 0) {
-        const badges = document.createElement('div');
-        badges.className = 'badges-section';
-        badges.innerHTML = '<div class="badges-title">Badges</div><div class="badges-list"><div class="badge"><span>🏅</span><span>' + user.badge_count + ' Badge' + (user.badge_count !== 1 ? 's' : '') + '</span></div></div>';
-        right.appendChild(badges);
-      }
-      const trust = document.createElement('div');
-      trust.className = 'trust-level';
-      const tl = user.trust_level || 0;
-      trust.innerHTML = '<div class="trust-header"><span class="trust-label">Trust Level</span><span class="trust-value">Level ' + tl + '</span></div><div class="trust-bar"><div class="trust-progress" style="width:' + ((tl / 4) * 100) + '%"></div></div>';
-      right.appendChild(trust);
-      
-      if (user.groups && user.groups.length > 0) {
-        const groups = document.createElement('div');
-        groups.className = 'groups';
-        groups.innerHTML = user.groups.map(g => '<a href="/g/' + g.name + '" class="group-chip">' + (g.display_name || g.name) + '</a>').join('');
-        right.appendChild(groups);
-      }
-      
-      const actions = document.createElement('div');
-      actions.className = 'actions';
-      const chatBtn = document.createElement('a');
-      chatBtn.className = 'btn btn-primary';
-      chatBtn.textContent = 'Chat';
-      chatBtn.href = '/new-message?username=' + user.username + '&type=chat';
-      const msgBtn = document.createElement('a');
-      msgBtn.className = 'btn btn-secondary';
-      msgBtn.textContent = 'Message';
-      msgBtn.href = '/new-message?username=' + user.username;
-      const profBtn = document.createElement('a');
-      profBtn.className = 'btn btn-secondary';
-      profBtn.textContent = 'Profile';
-      profBtn.href = '/u/' + user.username;
-      actions.appendChild(chatBtn);
-      actions.appendChild(msgBtn);
-      actions.appendChild(profBtn);
-      right.appendChild(actions);
-      
-      layout.appendChild(left);
-      layout.appendChild(right);
-      body.appendChild(layout);
+      body.innerHTML = '<div class="user-card-avatar"><img src="' + avatar + '"><div class="status-badge"></div></div><div class="user-info"><h2 class="display-name">' + (user.name || user.username) + '</h2><p class="username">@' + user.username + '</p>' + (user.title ? '<span class="title-badge">' + user.title + '</span>' : '') + '</div><div class="user-body-content"><div><div class="stats-section"><div class="section-title">Stats</div><div class="stats-grid"><div class="stat-box"><span class="stat-value">' + (user.post_count || 0) + '</span><span class="stat-label">Posts</span></div><div class="stat-box"><span class="stat-value">' + (user.like_count || 0) + '</span><span class="stat-label">Likes</span></div><div class="stat-box"><span class="stat-value">' + (user.solved_count || 0) + '</span><span class="stat-label">Solutions</span></div></div></div></div><div>' + (user.badge_count > 0 ? '<div class="badges-section"><div class="section-title">Badges</div><div class="badges-list"><div class="badge-chip"><span>🏅</span><span>' + user.badge_count + ' Badge' + (user.badge_count !== 1 ? 's' : '') + '</span></div></div></div>' : '') + (user.groups && user.groups.length > 0 ? '<div class="groups-section"><div class="section-title">Groups</div><div class="groups-list">' + user.groups.slice(0, 4).map(g => '<a href="/g/' + g.name + '" class="group-chip">' + (g.display_name || g.name) + '</a>').join('') + '</div></div>' : '') + '</div></div><div class="user-actions"><a href="/new-message?username=' + user.username + '&type=chat" class="btn btn-primary">💬 Chat</a><a href="/new-message?username=' + user.username + '" class="btn btn-secondary">✉️ Message</a><a href="/u/' + user.username + '" class="btn btn-secondary">👤 Profile</a></div>';
     });
   }
 
@@ -147,18 +81,11 @@ api.onPageChange(() => {
       const onlineUsers = data.users || [];
       onlineUsernames = new Set(onlineUsers.map(u => u.username));
       
-      document.querySelectorAll('.discord-user-item').forEach(item => {
-        const username = item.dataset.username;
-        const isOnline = onlineUsernames.has(username);
-        const statusDot = item.querySelector('.status-dot');
-        if (statusDot) {
-          statusDot.style.background = isOnline ? '#43b581' : '#747f8d';
-        }
-        if (isOnline) { item.classList.add('online'); } else { item.classList.remove('online'); }
-      });
-      
       const count = document.querySelector('.online-count');
       if (count) count.textContent = onlineUsernames.size;
+      
+      // Refresh the sidebar with updated online status
+      createSidebar();
     }).catch(err => {
       console.error('[Discord Style Chat] Failed to fetch online users:', err);
     });
@@ -167,6 +94,7 @@ api.onPageChange(() => {
   function createSidebar() {
     const existing = document.getElementById('discord-online-users-sidebar');
     if (existing) existing.remove();
+    
     const sidebar = document.createElement('div');
     sidebar.id = 'discord-online-users-sidebar';
     sidebar.className = 'discord-sidebar';
@@ -181,46 +109,85 @@ api.onPageChange(() => {
       if (!container) return;
       container.classList.remove('loading');
       
-      const roleGroups = {
-        admin: { title: 'Administrators', users: [], color: '#e74c3c' },
-        moderator: { title: 'Moderators', users: [], color: '#f39c12' },
-        tl4: { title: 'Trust Level 4', users: [], color: '#9b59b6' },
-        tl3: { title: 'Trust Level 3', users: [], color: '#1abc9c' },
-        tl2: { title: 'Trust Level 2', users: [], color: '#95a5a6' },
-        tl1: { title: 'Trust Level 1', users: [], color: '#7f8c8d' },
-        tl0: { title: 'Trust Level 0', users: [], color: '#5f6c6d' }
-      };
+      // Categorize users
+      const admins = [];
+      const moderators = [];
+      const onlineTL3 = [];
+      const onlineTL2 = [];
+      const onlineTL1 = [];
+      const onlineTL0 = [];
+      const offline = [];
       
       allUsers.forEach(item => {
-        const role = getUserRole(item.user);
-        if (roleGroups[role]) {
-          roleGroups[role].users.push(item.user);
+        const user = item.user;
+        const isOnline = onlineUsernames.has(user.username);
+        
+        if (user.admin) {
+          admins.push(user); // Always show admins
+        } else if (user.moderator) {
+          moderators.push(user); // Always show moderators
+        } else if (isOnline) {
+          // Only show non-staff if online
+          const tl = user.trust_level || 0;
+          if (tl === 4 || tl === 3) onlineTL3.push(user);
+          else if (tl === 2) onlineTL2.push(user);
+          else if (tl === 1) onlineTL1.push(user);
+          else onlineTL0.push(user);
+        } else {
+          offline.push(user); // Offline non-staff
         }
       });
       
       let html = '';
-      Object.keys(roleGroups).forEach(roleKey => {
-        const group = roleGroups[roleKey];
-        if (group.users.length > 0) {
-          // Create group container with flexbox
-          html += '<div class="role-group" style="display:flex;flex-direction:column;">';
-          
-          // Add group header FIRST
-          html += '<div class="role-header" style="color:' + group.color + ';font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;padding:12px 8px 4px 8px;">' + group.title + ' — ' + group.users.length + '</div>';
-          
-          // Then add all users in this group
-          group.users.forEach(u => {
-            let av = u.avatar_template;
-            if (av.startsWith('/')) av = window.location.origin + av;
-            av = av.replace('{size}', '96');
-            
-            html += '<div class="discord-user-item" data-username="' + u.username + '" style="display:flex;align-items:center;padding:8px;margin:2px 0;border-radius:4px;cursor:pointer;"><div style="width:32px;height:32px;margin-right:12px;position:relative;"><img src="' + av + '" style="width:100%;height:100%;border-radius:50%;"><div class="status-dot" style="position:absolute;bottom:-2px;right:-2px;width:12px;height:12px;background:#747f8d;border:3px solid #2f3136;border-radius:50%;"></div></div><div style="flex:1;"><div style="color:#dcddde;font-size:14px;font-weight:500;">' + u.username + '</div></div></div>';
-          });
-          
-          // Close group container
-          html += '</div>';
-        }
-      });
+      
+      // Admins (always show)
+      if (admins.length > 0) {
+        html += '<div class="role-group"><div class="role-header" style="color:#e74c3c;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;padding:12px 8px 4px 8px;">Administrators — ' + admins.length + '</div>';
+        admins.forEach(u => html += renderUser(u));
+        html += '</div>';
+      }
+      
+      // Moderators (always show)
+      if (moderators.length > 0) {
+        html += '<div class="role-group"><div class="role-header" style="color:#f39c12;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;padding:12px 8px 4px 8px;">Moderators — ' + moderators.length + '</div>';
+        moderators.forEach(u => html += renderUser(u));
+        html += '</div>';
+      }
+      
+      // Online Trust Level 3 (only if online)
+      if (onlineTL3.length > 0) {
+        html += '<div class="role-group"><div class="role-header" style="color:#1abc9c;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;padding:12px 8px 4px 8px;">Trust Level 3 — ' + onlineTL3.length + '</div>';
+        onlineTL3.forEach(u => html += renderUser(u));
+        html += '</div>';
+      }
+      
+      // Online Trust Level 2 (only if online)
+      if (onlineTL2.length > 0) {
+        html += '<div class="role-group"><div class="role-header" style="color:#95a5a6;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;padding:12px 8px 4px 8px;">Trust Level 2 — ' + onlineTL2.length + '</div>';
+        onlineTL2.forEach(u => html += renderUser(u));
+        html += '</div>';
+      }
+      
+      // Online Trust Level 1 (only if online)
+      if (onlineTL1.length > 0) {
+        html += '<div class="role-group"><div class="role-header" style="color:#7f8c8d;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;padding:12px 8px 4px 8px;">Trust Level 1 — ' + onlineTL1.length + '</div>';
+        onlineTL1.forEach(u => html += renderUser(u));
+        html += '</div>';
+      }
+      
+      // Online Trust Level 0 (only if online)
+      if (onlineTL0.length > 0) {
+        html += '<div class="role-group"><div class="role-header" style="color:#5f6c6d;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;padding:12px 8px 4px 8px;">Trust Level 0 — ' + onlineTL0.length + '</div>';
+        onlineTL0.forEach(u => html += renderUser(u));
+        html += '</div>';
+      }
+      
+      // Offline (everyone offline except staff)
+      if (offline.length > 0) {
+        html += '<div class="role-group"><div class="role-header" style="color:#72767d;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;padding:12px 8px 4px 8px;">Offline — ' + offline.length + '</div>';
+        offline.forEach(u => html += renderUser(u));
+        html += '</div>';
+      }
       
       container.innerHTML = html;
       container.querySelectorAll('.discord-user-item').forEach(item => {
@@ -229,15 +196,23 @@ api.onPageChange(() => {
         item.onclick = (e) => { e.preventDefault(); e.stopPropagation(); showUserCard(item.dataset.username, e); };
       });
       
-      // Initial online status check
-      updateOnlineStatus();
-      
-      // Refresh online status periodically
-      if (fetchTimer) clearInterval(fetchTimer);
-      fetchTimer = setInterval(updateOnlineStatus, refreshInterval);
+      count.textContent = onlineUsernames.size;
     });
+  }
+  
+  function renderUser(user) {
+    const avatar = (user.avatar_template.startsWith('/') ? window.location.origin : '') + user.avatar_template.replace('{size}', '96');
+    const isOnline = onlineUsernames.has(user.username);
+    const statusColor = isOnline ? '#43b581' : '#747f8d';
+    const onlineClass = isOnline ? ' online' : '';
+    
+    return '<div class="discord-user-item' + onlineClass + '" data-username="' + user.username + '" style="display:flex;align-items:center;padding:8px;margin:2px 0;border-radius:4px;cursor:pointer;"><div style="width:32px;height:32px;margin-right:12px;position:relative;"><img src="' + avatar + '" style="width:100%;height:100%;border-radius:50%;"><div class="status-dot" style="position:absolute;bottom:-2px;right:-2px;width:12px;height:12px;background:' + statusColor + ';border:3px solid #2f3136;border-radius:50%;"></div></div><div style="flex:1;"><div style="color:#dcddde;font-size:14px;font-weight:500;">' + user.username + '</div></div></div>';
   }
 
   createSidebar();
+  
+  // Update online status every 30 seconds
+  if (fetchTimer) clearInterval(fetchTimer);
+  fetchTimer = setInterval(updateOnlineStatus, refreshInterval);
 });
 </script>
