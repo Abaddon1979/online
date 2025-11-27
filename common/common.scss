@@ -611,3 +611,25 @@ $discord-hover: #3c3f45;
 
 .role-group { display: flex; flex-direction: column; }
 
+
+
+
+// Ensure sidebar is visible even when chat is expanded
+.chat-drawer,
+.chat-drawer.is-expanded,
+.chat-drawer-outlet-container,
+.chat-drawer-container {
+    margin-right: var(--sidebar-width, 240px) !important;
+    width: auto !important;
+    right: auto !important;
+}
+
+// If the drawer is positioned absolutely/fixed to the right
+.chat-drawer {
+    right: var(--sidebar-width, 240px) !important;
+}
+
+// Ensure full page chat also respects it
+.full-page-chat {
+    margin-right: var(--sidebar-width, 240px) !important;
+}
