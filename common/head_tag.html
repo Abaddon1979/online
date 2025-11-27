@@ -1,0 +1,105 @@
+<script type="text/discourse-plugin" version="0.8.7">
+console.log("[Discord Style Chat] Plugin script loaded!");
+
+api.onPageChange(() => {
+  console.log("[Discord Style Chat] Page changed - initializing sidebar...");
+  
+  const { ajax } = require("discourse/lib/ajax");
+  
+  // Get settings with fallback defaults
+  const sidebarEnabled = (settings.enable_online_sidebar !== false);
+  const sidebarWidth = settings.sidebar_width || 240;
+  const refreshInterval = settings.user_refresh_interval || 30000;
+
+  console.log("[Discord Style Chat] Settings:", { sidebarEnabled, sidebarWidth, refreshInterval });
+
+  if (!sidebarEnabled) {
+    console.log("[Discord Style Chat] Sidebar is disabled");
+    return;
+  }
+
+  // Set CSS variable and body class
+  document.documentElement.style.setProperty('--sidebar-width', sidebarWidth + 'px');
+  document.body.classList.add("enable-online-sidebar");
+  
+  let fetchTimer = null;
+
+  function createSidebar() {
+    console.log("[Discord Style Chat] Creating sidebar element...");
+    
+    // Remove any existing sidebar
+    const existing = document.getElementById('discord-online-users-sidebar');
+    if (existing) {
+      existing.remove();
+    }
+
+    const sidebar = document.createElement('div');
+    sidebar.id = 'discord-online-users-sidebar';
+    sidebar.className = 'discord-sidebar';
+    
+    // Force visibility with inline styles
+    sidebar.style.cssText = 'position:fixed!important;top:60px!important;right:0!important;width:' + sidebarWidth + 'px!important;height:calc(100vh - 60px)!important;background:#2f3136!important;border-left:1px solid #202225!important;z-index:9999!important;overflow-y:auto!important;display:block!important;';
+    
+    sidebar.innerHTML = '<div class="discord-sidebar-header" style="padding:16px;border-bottom:1px solid #202225;"><h3 style="color:#8e9297;font-size:12px;font-weight:600;margin:0;">Online — <span class="online-count">0</span></h3></div><div class="discord-sidebar-users loading" style="padding:8px;color:#dcddde;"></div>';
+
+    document.body.appendChild(sidebar);
+    console.log("[Discord Style Chat] ✓ Sidebar added to DOM");
+
+    fetchOnlineUsers();
+    
+    if (fetchTimer) clearInterval(fetchTimer);
+    fetchTimer = setInterval(fetchOnlineUsers, refreshInterval);
+  }
+
+  function fetchOnlineUsers() {
+    const usersContainer = document.querySelector('.discord-sidebar-users');
+    if (!usersContainer) return;
+
+    ajax("/directory_items.json", { data: { period: "all", order: "likes_received", asc: false, limit: 50 } })
+    .then(data => {
+      const users = data.directory_items || [];
+      console.log("[Discord Style Chat] Fetched " + users.length + " users");
+      updateUsersList(users.slice(0, 20));
+    })
+    .catch(error => {
+      console.error("[Discord Style Chat] Fetch error:", error);
+      usersContainer.innerHTML = '<div style="padding:16px;text-align:center;color:#8e9297;">Error loading users</div>';
+    });
+  }
+
+  function updateUsersList(users) {
+    const usersContainer = document.querySelector('.discord-sidebar-users');
+    const countElement = document.querySelector('.online-count');
+    if (!usersContainer || !countElement) return;
+
+    usersContainer.classList.remove('loading');
+    
+    if (users.length === 0) {
+      countElement.textContent = '0';
+      usersContainer.innerHTML = '<div style="padding:16px;text-align:center;color:#8e9297;">No users online</div>';
+      return;
+    }
+
+    countElement.textContent = users.length;
+
+    usersContainer.innerHTML = users.map(item => {
+      const user = item.user;
+      let avatarUrl = user.avatar_template;
+      if (avatarUrl.startsWith('/')) avatarUrl = window.location.origin + avatarUrl;
+      avatarUrl = avatarUrl.replace('{size}', '96');
+
+      return '<div class="discord-user-item" data-username="' + user.username + '" style="display:flex;align-items:center;padding:8px;margin:2px 0;border-radius:4px;cursor:pointer;"><div style="width:32px;height:32px;margin-right:12px;position:relative;"><img src="' + avatarUrl + '" style="width:100%;height:100%;border-radius:50%;"><div style="position:absolute;bottom:-2px;right:-2px;width:12px;height:12px;background:#43b581;border:3px solid #2f3136;border-radius:50%;"></div></div><div style="flex:1;"><div style="color:#dcddde;font-size:14px;font-weight:500;">' + user.username + '</div>' + (user.name ? '<div style="color:#8e9297;font-size:12px;">' + user.name + '</div>' : '') + '</div></div>';
+    }).join('');
+
+    usersContainer.querySelectorAll('.discord-user-item').forEach(item => {
+      item.onmouseenter = () => item.style.backgroundColor = '#3c3f45';
+      item.onmouseleave = () => item.style.backgroundColor = 'transparent';
+      item.onclick = () => window.location.href = '/u/' + item.dataset.username;
+    });
+    
+    console.log("[Discord Style Chat] ✓ User list updated");
+  }
+
+  createSidebar();
+});
+</script>
