@@ -21,95 +21,147 @@ api.onPageChange(() => {
   document.body.classList.add("enable-online-sidebar");
   
   let fetchTimer = null;
-  let usersData = [];
 
-  // User Card Functions
+  // User Card Functions  
   function showUserCard(username, event) {
     console.log("[Discord Style Chat] Showing user card for:", username);
-    
-    // Remove existing card
     closeUserCard();
     
-    // Fetch user details
-    ajax(`/u/${username}.json`)
-      .then(userData => {
-        createUserCard(userData.user, event);
-      })
-      .catch(error => {
-        console.error("[Discord Style Chat] Error fetching user:", error);
-      });
-  }
-
-  function createUserCard(user, event) {
-    // Create backdrop
+    // Create loading card
     const backdrop = document.createElement('div');
     backdrop.className = 'discord-user-card-backdrop';
     backdrop.onclick = closeUserCard;
     
-    //Create card
     const card = document.createElement('div');
     card.className = 'discord-user-card';
     
     // Position near click
     const rect = event.target.closest('.discord-user-item').getBoundingClientRect();
-    card.style.top = Math.min(rect.top, window.innerHeight - 600) + 'px';
+    card.style.top = Math.min(rect.top, window.innerHeight - 500) + 'px';
     card.style.right = (window.innerWidth - rect.left + 10) + 'px';
     
-    let avatarUrl = user.avatar_template;
-    if (avatarUrl.startsWith('/')) avatarUrl = window.location.origin + avatarUrl;
-    avatarUrl = avatarUrl.replace('{size}', '256');
-    
-    // Get badges
-    const badges = (user.badge_count > 0) ? user.featured_user_badge_ids || [] : [];
-    
     card.innerHTML = `
+      <button class="user-card-close" onclick="this.closest('.discord-user-card-backdrop').click()">×</button>
       <div class="user-card-banner"></div>
       <div class="user-card-body">
-        <div class="user-card-avatar">
-          <img src="${avatarUrl}" alt="${user.username}">
-          <div class="status-badge"></div>
-        </div>
-        <div class="user-card-username">${user.username}</div>
-        ${user.name ? `<div class="user-card-fullname">${user.name}</div>` : ''}
-        <div class="user-card-divider"></div>
-        <div class="user-card-stats">
-          <div class="stat-item">
-            <div class="stat-label">Posts</div>
-            <div class="stat-value">${user.post_count || 0}</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-label">Likes</div>
-            <div class="stat-value">${user.like_count || 0}</div>
-          </div>
-        </div>
-        ${badges.length > 0 ? `
-          <div class="user-card-badges">
-            <div class="badges-label">Badges (${user.badge_count})</div>
-            <div class="badges-list">
-              <div class="badge-item">🏅 ${user.badge_count} Badge${user.badge_count !== 1 ? 's' : ''}</div>
-            </div>
-          </div>
-        ` : ''}
-        ${user.trust_level !== undefined ? `
-          <div class="user-card-badges">
-            <div class="badges-label">Trust Level</div>
-            <div class="badges-list">
-              <div class="badge-item">⭐ Level ${user.trust_level}</div>
-            </div>
-          </div>
-        ` : ''}
-        <div class="user-card-actions">
-          <button class="action-btn primary" onclick="window.location.href='/u/${user.username}'">Profile</button>
-          <button class="action-btn secondary" onclick="window.location.href='/u/${user.username}/messages'">Message</button>
+        <div class="user-card-loading">
+          <div class="spinner"></div>
+          <span>Loading...</span>
         </div>
       </div>
-      <button class="user-card-close" onclick="document.querySelector('.discord-user-card-backdrop').click()">×</button>
     `;
     
     document.body.appendChild(backdrop);
     document.body.appendChild(card);
     
-    console.log("[Discord Style Chat] ✓ User card created");
+    // Fetch user details
+    ajax(`/u/${username}.json`)
+      .then(userData => {
+        fillUserCard(card, userData.user);
+      })
+      .catch(error => {
+        console.error("[Discord Style Chat] Error fetching user:", error);
+        card.querySelector('.user-card-body').innerHTML = '<div class="user-card-error">Failed to load user card.</div>';
+      });
+  }
+
+  function fillUserCard(card, user) {
+    let avatarUrl = user.avatar_template;
+    if (avatarUrl.startsWith('/')) avatarUrl = window.location.origin + avatarUrl;
+    avatarUrl = avatarUrl.replace('{size}', '256');
+    
+    // Format join date
+    const joinDate = new Date(user.created_at);
+    const joinStr = joinDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    
+    // Build meta info
+    let metaHTML = '';
+    if (user.created_at) {
+      metaHTML += `<div class="meta-item"><span>📅 Joined ${joinStr}</span></div>`;
+    }
+    if (user.location) {
+      metaHTML += `<div class="meta-item"><span>📍 ${user.location}</span></div>`;
+    }
+    if (user.website_name || user.website) {
+      const website = user.website || user.website_name;
+      metaHTML += `<div class="meta-item"><a href="${website}" target="_blank" rel="noopener">🔗 Website</a></div>`;
+    }
+    
+    // Build groups
+    let groupsHTML = '';
+    if (user.groups && user.groups.length > 0) {
+      groupsHTML = '<div class="groups">' + user.groups.map(g => 
+        `<a href="/g/${g.name}" class="group-chip">${g.display_name || g.name}</a>`
+      ).join('') + '</div>';
+    }
+    
+    // Build badges
+    let badgesHTML = '';
+    if (user.badge_count > 0) {
+      badgesHTML = `
+        <div class="badges-section">
+          <div class="badges-title">Badges</div>
+          <div class="badges-list">
+            <div class="badge"><span>🏅</span><span>${user.badge_count} Badge${user.badge_count !== 1 ? 's' : ''}</span></div>
+          </div>
+        </div>
+      `;
+    }
+    
+    // Calculate trust level progress
+    const trustLevel = user.trust_level !== undefined ? user.trust_level : 0;
+    const trustProgress = ((trustLevel / 4) * 100) + '%';
+    
+    card.querySelector('.user-card-body').innerHTML = `
+      <div class="card-layout">
+        <div class="left-section">
+          <div class="user-card-avatar">
+            <img src="${avatarUrl}" alt="${user.username}">
+            <div class="status-badge"></div>
+          </div>
+          <div class="user-info">
+            <h2 class="display-name">${user.name || user.username}</h2>
+            <p class="username">@${user.username}</p>
+            ${user.title ? `<span class="title-badge">${user.title}</span>` : ''}
+          </div>
+        </div>
+        <div class="right-section">
+          ${user.bio_cooked ? `<div class="bio">${user.bio_cooked}</div>` : ''}
+          ${metaHTML ? `<div class="meta-info">${metaHTML}</div>` : ''}
+          <div class="stats-grid">
+            <div class="stat-item">
+              <span class="stat-value">${user.post_count || 0}</span>
+              <span class="stat-label">Posts</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-value">${user.like_count || 0}</span>
+              <span class="stat-label">Likes</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-value">${user.solved_count || 0}</span>
+              <span class="stat-label">Solutions</span>
+            </div>
+          </div>
+          ${badgesHTML}
+          <div class="trust-level">
+            <div class="trust-header">
+              <span class="trust-label">Trust Level</span>
+              <span class="trust-value">Level ${trustLevel}</span>
+            </div>
+            <div class="trust-bar">
+              <div class="trust-progress" style="width: ${trustProgress}"></div>
+            </div>
+          </div>
+          ${groupsHTML}
+          <div class="actions">
+            <a href="/u/${user.username}" class="btn btn-primary">Profile</a>
+            <a href="/u/${user.username}/messages" class="btn btn-secondary">Message</a>
+          </div>
+        </div>
+      </div>
+    `;
+    
+    console.log("[Discord Style Chat] ✓ User card filled");
   }
 
   function closeUserCard() {
@@ -147,9 +199,9 @@ api.onPageChange(() => {
 
     ajax("/directory_items.json", { data: { period: "all", order: "likes_received", asc: false, limit: 50 } })
     .then(data => {
-      usersData = data.directory_items || [];
-      console.log("[Discord Style Chat] Fetched " + usersData.length + " users");
-      updateUsersList(usersData.slice(0, 20));
+      const users = data.directory_items || [];
+      console.log("[Discord Style Chat] Fetched " + users.length + " users");
+      updateUsersList(users.slice(0, 20));
     })
     .catch(error => {
       console.error("[Discord Style Chat] Fetch error:", error);
