@@ -16,11 +16,9 @@ api.onPageChange(() => {
 
   function showUserCard(username, event) {
     closeUserCard();
-    
     const backdrop = document.createElement('div');
     backdrop.className = 'discord-user-card-backdrop';
     backdrop.onclick = closeUserCard;
-    
     const card = document.createElement('div');
     card.className = 'discord-user-card';
     const rect = event.target.closest('.discord-user-item').getBoundingClientRect();
@@ -36,29 +34,24 @@ api.onPageChange(() => {
       let avatar = user.avatar_template;
       if (avatar.startsWith('/')) avatar = window.location.origin + avatar;
       avatar = avatar.replace('{size}', '256');
-      
       const joined = new Date(user.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
       
       const body = card.querySelector('.user-card-body');
       body.innerHTML = '';
-      
       const layout = document.createElement('div');
       layout.className = 'card-layout';
-      
       const left = document.createElement('div');
       left.className = 'left-section';
       left.innerHTML = '<div class="user-card-avatar"><img src="' + avatar + '"><div class="status-badge"></div></div><div class="user-info"><h2 class="display-name">' + (user.name || user.username) + '</h2><p class="username">@' + user.username + '</p>' + (user.title ? '<span class="title-badge">' + user.title + '</span>' : '') + '</div>';
       
       const right = document.createElement('div');
       right.className = 'right-section';
-      
       if (user.bio_cooked) {
         const bio = document.createElement('div');
         bio.className = 'bio';
         bio.innerHTML = user.bio_cooked;
         right.appendChild(bio);
       }
-      
       const meta = document.createElement('div');
       meta.className = 'meta-info';
       meta.innerHTML = '<div class="meta-item">📅 Joined ' + joined + '</div>' + (user.location ? '<div class="meta-item">📍 ' + user.location + '</div>' : '');
@@ -75,7 +68,6 @@ api.onPageChange(() => {
         badges.innerHTML = '<div class="badges-title">Badges</div><div class="badges-list"><div class="badge"><span>🏅</span><span>' + user.badge_count + ' Badge' + (user.badge_count !== 1 ? 's' : '') + '</span></div></div>';
         right.appendChild(badges);
       }
-      
       const trust = document.createElement('div');
       trust.className = 'trust-level';
       const tl = user.trust_level || 0;
@@ -91,7 +83,21 @@ api.onPageChange(() => {
       
       const actions = document.createElement('div');
       actions.className = 'actions';
-      actions.innerHTML = '<a href="/chat/c/-/' + user.username + '" class="btn btn-primary">Chat</a><a href="/u/' + user.username + '/messages" class="btn btn-secondary">Message</a><a href="/u/' + user.username + '" class="btn btn-secondary">Profile</a>';
+      const chatBtn = document.createElement('a');
+      chatBtn.className = 'btn btn-primary';
+      chatBtn.textContent = 'Chat';
+      chatBtn.href = '/new-message?username=' + user.username + '&type=chat';
+      const msgBtn = document.createElement('a');
+      msgBtn.className = 'btn btn-secondary';
+      msgBtn.textContent = 'Message';
+      msgBtn.href = '/new-message?username=' + user.username;
+      const profBtn = document.createElement('a');
+      profBtn.className = 'btn btn-secondary';
+      profBtn.textContent = 'Profile';
+      profBtn.href = '/u/' + user.username;
+      actions.appendChild(chatBtn);
+      actions.appendChild(msgBtn);
+      actions.appendChild(profBtn);
       right.appendChild(actions);
       
       layout.appendChild(left);
@@ -102,12 +108,11 @@ api.onPageChange(() => {
 
   function closeUserCard() {
     document.querySelectorAll('.discord-user-card-backdrop, .discord-user-card').forEach(el => el.remove());
-  }
+ }
 
   function createSidebar() {
     const existing = document.getElementById('discord-online-users-sidebar');
     if (existing) existing.remove();
-
     const sidebar = document.createElement('div');
     sidebar.id = 'discord-online-users-sidebar';
     sidebar.className = 'discord-sidebar';
@@ -119,11 +124,9 @@ api.onPageChange(() => {
       const users = (data.directory_items || []).slice(0, 20);
       const container = document.querySelector('.discord-sidebar-users');
       const count = document.querySelector('.online-count');
-      
       if (!container) return;
       container.classList.remove('loading');
       count.textContent = users.length;
-      
       container.innerHTML = users.map(item => {
         const u = item.user;
         let av = u.avatar_template;
@@ -131,13 +134,11 @@ api.onPageChange(() => {
         av = av.replace('{size}', '96');
         return '<div class="discord-user-item" data-username="' + u.username + '" style="display:flex;align-items:center;padding:8px;margin:2px 0;border-radius:4px;cursor:pointer;"><div style="width:32px;height:32px;margin-right:12px;position:relative;"><img src="' + av + '" style="width:100%;height:100%;border-radius:50%;"><div style="position:absolute;bottom:-2px;right:-2px;width:12px;height:12px;background:#43b581;border:3px solid #2f3136;border-radius:50%;"></div></div><div style="flex:1;"><div style="color:#dcddde;font-size:14px;font-weight:500;">' + u.username + '</div></div></div>';
       }).join('');
-      
       container.querySelectorAll('.discord-user-item').forEach(item => {
         item.onmouseenter = () => item.style.backgroundColor = '#3c3f45';
         item.onmouseleave = () => item.style.backgroundColor = 'transparent';
         item.onclick = (e) => { e.preventDefault(); e.stopPropagation(); showUserCard(item.dataset.username, e); };
       });
-      
       if (fetchTimer) clearInterval(fetchTimer);
       fetchTimer = setInterval(() => ajax("/directory_items.json", { data: { period: "all", order: "likes_received", limit: 50 } }), refreshInterval);
     });
