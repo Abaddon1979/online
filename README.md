@@ -68,15 +68,11 @@ discord-style-chat/
 ├── settings.yml                        # Configurable settings
 ├── common/
 │   ├── common.scss                     # Core styles (Discord colors, fonts, sidebar)
-│   └── header.html                     # Sidebar HTML template
+│   └── header.html                     # Sidebar HTML & JavaScript
 ├── desktop/
 │   └── desktop.scss                    # Desktop-specific styles
-├── mobile/
-│   └── mobile.scss                     # Mobile-specific styles
-└── javascripts/
-    └── discourse/
-        └── initializers/
-            └── discord-style-chat.js   # Sidebar functionality & user fetching
+└── mobile/
+    └── mobile.scss                     # Mobile-specific styles
 ```
 
 ## How It Works
@@ -87,7 +83,7 @@ discord-style-chat/
 - **mobile.scss**: Hides sidebar on mobile devices for better UX
 
 ### JavaScript
-The initializer (`discord-style-chat.js`):
+The JavaScript in `header.html` uses the `<script type="text/discourse-plugin">` format:
 1. Creates the sidebar element and injects it into the DOM
 2. Fetches online users from Discourse API
 3. Updates the user list periodically
