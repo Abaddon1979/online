@@ -154,7 +154,7 @@ api.onPageChange(() => {
         if (statusDot) {
           statusDot.style.background = isOnline ? '#43b581' : '#747f8d';
         }
-        item.style.order = isOnline ? '-1' : '0';
+        if (isOnline) { item.classList.add('online'); } else { item.classList.remove('online'); }
       });
       
       const count = document.querySelector('.online-count');

@@ -1,0 +1,26 @@
+// Role group ordering - keep headers at top
+.role-group {
+    display: flex !important;
+    flex-direction: column !important;
+
+    .role-header {
+        order: -2 !important;
+    }
+
+    .discord-user-item {
+        order: 1 !important;
+
+        &.online {
+            order: 0 !important;
+        }
+    }
+}
+
+// User card high z-index
+.discord-user-card {
+    z-index: 999999 !important;
+}
+
+.discord-user-card-backdrop {
+    z-index: 999998 !important;
+}
