@@ -2,11 +2,10 @@
 console.log("[Discord Style Chat] Plugin script loaded!");
 
 api.onPageChange(() => {
-  console.log("[Discord Style Chat] Page changed - initializing sidebar...");
+  console.log("[Discord Style Chat] Page changed - initializing...");
   
   const { ajax } = require("discourse/lib/ajax");
   
-  // Get settings with fallback defaults
   const sidebarEnabled = (settings.enable_online_sidebar !== false);
   const sidebarWidth = settings.sidebar_width || 240;
   const refreshInterval = settings.user_refresh_interval || 30000;
@@ -18,32 +17,123 @@ api.onPageChange(() => {
     return;
   }
 
-  // Set CSS variable and body class
   document.documentElement.style.setProperty('--sidebar-width', sidebarWidth + 'px');
   document.body.classList.add("enable-online-sidebar");
   
   let fetchTimer = null;
+  let usersData = [];
 
-  function createSidebar() {
-    console.log("[Discord Style Chat] Creating sidebar element...");
+  // User Card Functions
+  function showUserCard(username, event) {
+    console.log("[Discord Style Chat] Showing user card for:", username);
     
-    // Remove any existing sidebar
+    // Remove existing card
+    closeUserCard();
+    
+    // Fetch user details
+    ajax(`/u/${username}.json`)
+      .then(userData => {
+        createUserCard(userData.user, event);
+      })
+      .catch(error => {
+        console.error("[Discord Style Chat] Error fetching user:", error);
+      });
+  }
+
+  function createUserCard(user, event) {
+    // Create backdrop
+    const backdrop = document.createElement('div');
+    backdrop.className = 'discord-user-card-backdrop';
+    backdrop.onclick = closeUserCard;
+    
+    //Create card
+    const card = document.createElement('div');
+    card.className = 'discord-user-card';
+    
+    // Position near click
+    const rect = event.target.closest('.discord-user-item').getBoundingClientRect();
+    card.style.top = Math.min(rect.top, window.innerHeight - 600) + 'px';
+    card.style.right = (window.innerWidth - rect.left + 10) + 'px';
+    
+    let avatarUrl = user.avatar_template;
+    if (avatarUrl.startsWith('/')) avatarUrl = window.location.origin + avatarUrl;
+    avatarUrl = avatarUrl.replace('{size}', '256');
+    
+    // Get badges
+    const badges = (user.badge_count > 0) ? user.featured_user_badge_ids || [] : [];
+    
+    card.innerHTML = `
+      <div class="user-card-banner"></div>
+      <div class="user-card-body">
+        <div class="user-card-avatar">
+          <img src="${avatarUrl}" alt="${user.username}">
+          <div class="status-badge"></div>
+        </div>
+        <div class="user-card-username">${user.username}</div>
+        ${user.name ? `<div class="user-card-fullname">${user.name}</div>` : ''}
+        <div class="user-card-divider"></div>
+        <div class="user-card-stats">
+          <div class="stat-item">
+            <div class="stat-label">Posts</div>
+            <div class="stat-value">${user.post_count || 0}</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-label">Likes</div>
+            <div class="stat-value">${user.like_count || 0}</div>
+          </div>
+        </div>
+        ${badges.length > 0 ? `
+          <div class="user-card-badges">
+            <div class="badges-label">Badges (${user.badge_count})</div>
+            <div class="badges-list">
+              <div class="badge-item">🏅 ${user.badge_count} Badge${user.badge_count !== 1 ? 's' : ''}</div>
+            </div>
+          </div>
+        ` : ''}
+        ${user.trust_level !== undefined ? `
+          <div class="user-card-badges">
+            <div class="badges-label">Trust Level</div>
+            <div class="badges-list">
+              <div class="badge-item">⭐ Level ${user.trust_level}</div>
+            </div>
+          </div>
+        ` : ''}
+        <div class="user-card-actions">
+          <button class="action-btn primary" onclick="window.location.href='/u/${user.username}'">Profile</button>
+          <button class="action-btn secondary" onclick="window.location.href='/u/${user.username}/messages'">Message</button>
+        </div>
+      </div>
+      <button class="user-card-close" onclick="document.querySelector('.discord-user-card-backdrop').click()">×</button>
+    `;
+    
+    document.body.appendChild(backdrop);
+    document.body.appendChild(card);
+    
+    console.log("[Discord Style Chat] ✓ User card created");
+  }
+
+  function closeUserCard() {
+    const backdrop = document.querySelector('.discord-user-card-backdrop');
+    const card = document.querySelector('.discord-user-card');
+    if (backdrop) backdrop.remove();
+    if (card) card.remove();
+  }
+
+  // Sidebar Functions
+  function createSidebar() {
+    console.log("[Discord Style Chat] Creating sidebar...");
+    
     const existing = document.getElementById('discord-online-users-sidebar');
-    if (existing) {
-      existing.remove();
-    }
+    if (existing) existing.remove();
 
     const sidebar = document.createElement('div');
     sidebar.id = 'discord-online-users-sidebar';
     sidebar.className = 'discord-sidebar';
-    
-    // Force visibility with inline styles
     sidebar.style.cssText = 'position:fixed!important;top:60px!important;right:0!important;width:' + sidebarWidth + 'px!important;height:calc(100vh - 60px)!important;background:#2f3136!important;border-left:1px solid #202225!important;z-index:9999!important;overflow-y:auto!important;display:block!important;';
-    
     sidebar.innerHTML = '<div class="discord-sidebar-header" style="padding:16px;border-bottom:1px solid #202225;"><h3 style="color:#8e9297;font-size:12px;font-weight:600;margin:0;">Online — <span class="online-count">0</span></h3></div><div class="discord-sidebar-users loading" style="padding:8px;color:#dcddde;"></div>';
 
     document.body.appendChild(sidebar);
-    console.log("[Discord Style Chat] ✓ Sidebar added to DOM");
+    console.log("[Discord Style Chat] ✓ Sidebar added");
 
     fetchOnlineUsers();
     
@@ -57,9 +147,9 @@ api.onPageChange(() => {
 
     ajax("/directory_items.json", { data: { period: "all", order: "likes_received", asc: false, limit: 50 } })
     .then(data => {
-      const users = data.directory_items || [];
-      console.log("[Discord Style Chat] Fetched " + users.length + " users");
-      updateUsersList(users.slice(0, 20));
+      usersData = data.directory_items || [];
+      console.log("[Discord Style Chat] Fetched " + usersData.length + " users");
+      updateUsersList(usersData.slice(0, 20));
     })
     .catch(error => {
       console.error("[Discord Style Chat] Fetch error:", error);
@@ -91,10 +181,15 @@ api.onPageChange(() => {
       return '<div class="discord-user-item" data-username="' + user.username + '" style="display:flex;align-items:center;padding:8px;margin:2px 0;border-radius:4px;cursor:pointer;"><div style="width:32px;height:32px;margin-right:12px;position:relative;"><img src="' + avatarUrl + '" style="width:100%;height:100%;border-radius:50%;"><div style="position:absolute;bottom:-2px;right:-2px;width:12px;height:12px;background:#43b581;border:3px solid #2f3136;border-radius:50%;"></div></div><div style="flex:1;"><div style="color:#dcddde;font-size:14px;font-weight:500;">' + user.username + '</div>' + (user.name ? '<div style="color:#8e9297;font-size:12px;">' + user.name + '</div>' : '') + '</div></div>';
     }).join('');
 
+    // Add event handlers with user card
     usersContainer.querySelectorAll('.discord-user-item').forEach(item => {
       item.onmouseenter = () => item.style.backgroundColor = '#3c3f45';
       item.onmouseleave = () => item.style.backgroundColor = 'transparent';
-      item.onclick = () => window.location.href = '/u/' + item.dataset.username;
+      item.onclick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        showUserCard(item.dataset.username, e);
+      };
     });
     
     console.log("[Discord Style Chat] ✓ User list updated");

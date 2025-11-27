@@ -19,19 +19,19 @@ $discord-hover: #3c3f45;
 
 .chat-composer {
   font-family: 'Quicksand', sans-serif !important;
-  
+
   .chat-composer-input {
     font-family: 'Quicksand', sans-serif !important;
   }
 }
 
-// Discord-style chat container
+// Discord-style chat container - MATCH SIDEBAR COLOR
 .chat-container,
 .chat-drawer-container,
 .full-page-chat {
-  background-color: $discord-dark;
+  background-color: $discord-darker !important;
   font-family: 'Quicksand', sans-serif;
-  
+
   // Adjust width to accommodate sidebar
   margin-right: var(--sidebar-width, 240px);
   transition: margin-right 0.3s ease;
@@ -41,7 +41,7 @@ $discord-hover: #3c3f45;
 .chat-message-container {
   background-color: transparent !important;
   border: none !important;
-  
+
   &:hover {
     background-color: $discord-hover !important;
   }
@@ -53,35 +53,35 @@ $discord-hover: #3c3f45;
   border-radius: 0 !important;
   padding: 8px 16px !important;
   margin: 0 !important;
-  
+
   .chat-message-avatar {
     border-radius: 50%;
   }
-  
+
   .chat-message-info {
     color: $discord-text !important;
-    
+
     .username {
       color: $discord-text !important;
       font-weight: 600;
       font-family: 'Quicksand', sans-serif;
     }
-    
+
     .time {
       color: $discord-text-muted;
       font-size: 0.75rem;
       margin-left: 8px;
     }
   }
-  
+
   .chat-message-text {
     color: $discord-text !important;
     font-family: 'Quicksand', sans-serif;
-    
+
     a {
       color: $discord-text-link !important;
       text-decoration: none;
-      
+
       &:hover {
         text-decoration: underline;
       }
@@ -89,9 +89,9 @@ $discord-hover: #3c3f45;
   }
 }
 
-// Discord-style composer
+// Discord-style composer - MATCH SIDEBAR COLOR
 .chat-composer-container {
-  background-color: $discord-dark !important;
+  background-color: $discord-darker !important;
   border-top: 1px solid $discord-darkest !important;
   padding: 16px !important;
 }
@@ -102,20 +102,20 @@ $discord-hover: #3c3f45;
   border-radius: 8px !important;
   padding: 11px !important;
   color: $discord-text !important;
-  
+
   &::placeholder {
     color: $discord-text-muted !important;
   }
-  
+
   &:focus {
-    background-color: $discord-darker !important;
+    background-color: $discord-darkest !important;
   }
 }
 
 // Discord-style channel list
 .chat-channel-list {
   background-color: $discord-darker !important;
-  
+
   .chat-channel-row {
     background-color: transparent !important;
     color: $discord-text-muted !important;
@@ -123,17 +123,17 @@ $discord-hover: #3c3f45;
     margin: 2px 8px;
     padding: 6px 8px !important;
     font-family: 'Quicksand', sans-serif;
-    
+
     &:hover {
       background-color: $discord-hover !important;
       color: $discord-text !important;
     }
-    
+
     &.active {
       background-color: $discord-hover !important;
       color: $discord-text !important;
     }
-    
+
     .chat-channel-unread-indicator {
       background-color: $discord-blurple !important;
     }
@@ -143,7 +143,7 @@ $discord-hover: #3c3f45;
 // Online Users Sidebar
 .discord-sidebar {
   position: fixed;
-  top: 60px; // Account for Discourse header
+  top: 60px;
   right: 0;
   width: var(--sidebar-width, 240px);
   height: calc(100vh - 60px);
@@ -152,19 +152,19 @@ $discord-hover: #3c3f45;
   overflow-y: auto;
   z-index: 999;
   font-family: 'Quicksand', sans-serif;
-  
+
   &::-webkit-scrollbar {
     width: 8px;
   }
-  
+
   &::-webkit-scrollbar-track {
     background: $discord-darker;
   }
-  
+
   &::-webkit-scrollbar-thumb {
     background: $discord-darkest;
     border-radius: 4px;
-    
+
     &:hover {
       background: rgba(0, 0, 0, 0.5);
     }
@@ -174,7 +174,7 @@ $discord-hover: #3c3f45;
 .discord-sidebar-header {
   padding: 16px;
   border-bottom: 1px solid $discord-darkest;
-  
+
   h3 {
     color: $discord-text-muted;
     font-size: 12px;
@@ -183,7 +183,7 @@ $discord-hover: #3c3f45;
     letter-spacing: 0.5px;
     margin: 0;
     font-family: 'Quicksand', sans-serif;
-    
+
     .online-count {
       color: $discord-text;
     }
@@ -202,25 +202,25 @@ $discord-hover: #3c3f45;
   border-radius: 4px;
   cursor: pointer;
   transition: background-color 0.15s ease;
-  
+
   &:hover {
     background-color: $discord-hover;
   }
-  
+
   .user-avatar {
     width: 32px;
     height: 32px;
     border-radius: 50%;
     margin-right: 12px;
     position: relative;
-    
+
     img {
       width: 100%;
       height: 100%;
       border-radius: 50%;
       object-fit: cover;
     }
-    
+
     .status-indicator {
       position: absolute;
       bottom: -2px;
@@ -232,11 +232,11 @@ $discord-hover: #3c3f45;
       border-radius: 50%;
     }
   }
-  
+
   .user-info {
     flex: 1;
     min-width: 0;
-    
+
     .username {
       color: $discord-text;
       font-size: 14px;
@@ -246,7 +246,7 @@ $discord-hover: #3c3f45;
       text-overflow: ellipsis;
       font-family: 'Quicksand', sans-serif;
     }
-    
+
     .user-status {
       color: $discord-text-muted;
       font-size: 12px;
@@ -263,7 +263,7 @@ body:not(.enable-online-sidebar) {
   .discord-sidebar {
     display: none;
   }
-  
+
   .chat-container,
   .chat-drawer-container,
   .full-page-chat {
@@ -276,7 +276,7 @@ body:not(.enable-online-sidebar) {
   .discord-sidebar {
     width: 200px;
   }
-  
+
   .chat-container,
   .chat-drawer-container,
   .full-page-chat {
@@ -284,20 +284,20 @@ body:not(.enable-online-sidebar) {
   }
 }
 
-// Dark theme for chat headers
+// Dark theme for chat headers - MATCH SIDEBAR COLOR
 .chat-channel-header {
-  background-color: $discord-dark !important;
+  background-color: $discord-darker !important;
   border-bottom: 1px solid $discord-darkest !important;
   color: $discord-text !important;
-  
+
   .chat-channel-title {
     color: $discord-text !important;
     font-family: 'Quicksand', sans-serif;
     font-weight: 600;
-    
+
     .channel-name {
       color: $discord-text !important;
-      
+
       &::before {
         content: "# ";
         color: $discord-text-muted;
@@ -313,7 +313,7 @@ body:not(.enable-online-sidebar) {
   border-color: $discord-blurple !important;
   color: white !important;
   font-family: 'Quicksand', sans-serif;
-  
+
   &:hover {
     background-color: darken($discord-blurple, 10%) !important;
     border-color: darken($discord-blurple, 10%) !important;
@@ -340,4 +340,245 @@ body:not(.enable-online-sidebar) {
   color: $discord-text-muted;
   font-family: 'Quicksand', sans-serif;
   font-size: 14px;
+}
+
+// Discord-style User Card Popup
+.discord-user-card {
+  position: fixed;
+  width: 340px;
+  background-color: $discord-darker;
+  border-radius: 8px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+  z-index: 10000;
+  font-family: 'Quicksand', sans-serif;
+  overflow: hidden;
+  animation: discordUserCardFadeIn 0.15s ease-out;
+
+  .user-card-banner {
+    position: relative;
+    height: 80px;
+    background: linear-gradient(90deg, $discord-blurple, darken($discord-blurple, 15%));
+    overflow: hidden;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  .user-card-body {
+    position: relative;
+    padding: 16px;
+    padding-top: 70px;
+    background-color: $discord-darker;
+  }
+
+  .user-card-avatar {
+    position: absolute;
+    top: -60px;
+    left: 16px;
+    width: 92px;
+    height: 92px;
+    border-radius: 50%;
+    border: 6px solid $discord-darker;
+    background-color: $discord-darker;
+    overflow: hidden;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+    }
+
+    .status-badge {
+      position: absolute;
+      bottom: 4px;
+      right: 4px;
+      width: 20px;
+      height: 20px;
+      background-color: $discord-online;
+      border: 4px solid $discord-darker;
+      border-radius: 50%;
+    }
+  }
+
+  .user-card-username {
+    color: $discord-text;
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    word-wrap: break-word;
+  }
+
+  .user-card-fullname {
+    color: $discord-text-muted;
+    font-size: 14px;
+    margin-bottom: 12px;
+  }
+
+  .user-card-divider {
+    height: 1px;
+    background-color: $discord-darkest;
+    margin: 12px 0;
+  }
+
+  .user-card-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
+
+    .stat-item {
+      background-color: $discord-darkest;
+      padding: 12px;
+      border-radius: 6px;
+
+      .stat-label {
+        color: $discord-text-muted;
+        font-size: 11px;
+        text-transform: uppercase;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        margin-bottom: 4px;
+      }
+
+      .stat-value {
+        color: $discord-text;
+        font-size: 16px;
+        font-weight: 700;
+      }
+    }
+  }
+
+  .user-card-badges {
+    margin-bottom: 12px;
+
+    .badges-label {
+      color: $discord-text-muted;
+      font-size: 11px;
+      text-transform: uppercase;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+
+    .badges-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+
+      .badge-item {
+        background-color: $discord-darkest;
+        color: $discord-text;
+        padding: 6px 10px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 4px;
+
+        .badge-icon {
+          width: 16px;
+          height: 16px;
+        }
+      }
+    }
+  }
+
+  .user-card-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+
+    .action-btn {
+      flex: 1;
+      padding: 10px;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 600;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      font-family: 'Quicksand', sans-serif;
+      border: none;
+
+      &.primary {
+        background-color: $discord-blurple;
+        color: white;
+
+        &:hover {
+          background-color: darken($discord-blurple, 8%);
+        }
+      }
+
+      &.secondary {
+        background-color: $discord-darkest;
+        color: $discord-text;
+
+        &:hover {
+          background-color: lighten($discord-darkest, 5%);
+        }
+      }
+    }
+  }
+
+  .user-card-close {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background-color: rgba(0, 0, 0, 0.3);
+    color: $discord-text-muted;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-center: center;
+    font-size: 20px;
+    transition: all 0.15s ease;
+    backdrop-filter: blur(4px);
+
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.5);
+      color: $discord-text;
+    }
+  }
+}
+
+.discord-user-card-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 9999;
+  animation: discordBackdropFadeIn 0.15s ease-out;
+}
+
+@keyframes discordUserCardFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes discordBackdropFadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
