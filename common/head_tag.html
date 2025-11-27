@@ -149,20 +149,6 @@ api.onPageChange(() => {
         const role = getUserRole(item.user);
         if (roleGroups[role]) {
           roleGroups[role].users.push(item.user);
-        }
-      });
-      
-      let onlineCount = allUsers.filter(item => {
-        const lastSeen = item.user.last_seen_at;
-        if (!lastSeen) return false;
-        const diff = Date.now() - new Date(lastSeen).getTime();
-        return diff < 600000;
-      }).length;
-      
-      count.textContent = onlineCount;
-      
-      let html = '';
-      Object.keys(roleGroups).forEach(roleKey => {
         const group = roleGroups[roleKey];
         if (group.users.length > 0) {
           html += '<div class="role-group"><div class="role-header" style="color:' + group.color + ';font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;padding:12px 8px 4px 8px;">' + group.title + ' — ' + group.users.length + '</div>';
@@ -172,7 +158,7 @@ api.onPageChange(() => {
             if (av.startsWith('/')) av = window.location.origin + av;
             av = av.replace('{size}', '96');
             const lastSeen = u.last_seen_at;
-            const isOnline = lastSeen && (Date.now() - new Date(lastSeen).getTime()) < 600000;
+            const isOnline = lastSeen && (Date.now() - new Date(lastSeen).getTime()) < 900000;
             const statusColor = isOnline ? '#43b581' : '#747f8d';
             
             html += '<div class="discord-user-item" data-username="' + u.username + '" style="display:flex;align-items:center;padding:8px;margin:2px 0;border-radius:4px;cursor:pointer;' + (isOnline ? 'order:-1;' : '') + '"><div style="width:32px;height:32px;margin-right:12px;position:relative;"><img src="' + av + '" style="width:100%;height:100%;border-radius:50%;"><div style="position:absolute;bottom:-2px;right:-2px;width:12px;height:12px;background:' + statusColor + ';border:3px solid #2f3136;border-radius:50%;"></div></div><div style="flex:1;"><div style="color:#dcddde;font-size:14px;font-weight:500;">' + u.username + '</div></div></div>';
