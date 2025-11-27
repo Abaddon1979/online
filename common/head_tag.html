@@ -8,6 +8,10 @@ api.onPageChange(() => {
   const refreshInterval = settings.user_refresh_interval || 30000;
 
   if (!sidebarEnabled) return;
+  
+  // Only show sidebar on chat pages
+  const isChatPage = window.location.pathname.includes('/chat') || document.querySelector('.full-page-chat, .chat-drawer');
+  if (!isChatPage) return;
 
   document.documentElement.style.setProperty('--sidebar-width', sidebarWidth + 'px');
   document.body.classList.add("enable-online-sidebar");
@@ -165,6 +169,21 @@ api.onPageChange(() => {
       Object.keys(roleGroups).forEach(roleKey => {
         const group = roleGroups[roleKey];
         if (group.users.length > 0) {
+          html += '<div class="role-group"><div class="role-header" style="color:' + group.color + ';font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;padding:12px 8px 4px 8px;">' + group.title + ' — ' + group.users.length + '</div>';
+          
+          group.users.forEach(u => {
+            let av = u.avatar_template;
+            if (av.startsWith('/')) av = window.location.origin + av;
+            av = av.replace('{size}', '96');
+            const lastSeen = u.last_seen_at;
+            const diff = lastSeen ? Date.now() - new Date(lastSeen).getTime() : null;
+            const isOnline = lastSeen && diff < 900000;
+            const statusColor = isOnline ? '#43b581' : '#747f8d';
+            
+            html += '<div class="discord-user-item" data-username="' + u.username + '" style="display:flex;align-items:center;padding:8px;margin:2px 0;border-radius:4px;cursor:pointer;' + (isOnline ? 'order:-1;' : '') + '"><div style="width:32px;height:32px;margin-right:12px;position:relative;"><img src="' + av + '" style="width:100%;height:100%;border-radius:50%;"><div style="position:absolute;bottom:-2px;right:-2px;width:12px;height:12px;background:' + statusColor + ';border:3px solid #2f3136;border-radius:50%;"></div></div><div style="flex:1;"><div style="color:#dcddde;font-size:14px;font-weight:500;">' + u.username + '</div></div></div>';
+          });
+          
+          html += '</div>';
         }
       });
       
