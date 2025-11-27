@@ -127,7 +127,7 @@ api.onPageChange(() => {
     sidebar.innerHTML = '<div class="discord-sidebar-header" style="padding:16px;border-bottom:1px solid #202225;"><h3 style="color:#8e9297;font-size:12px;font-weight:600;margin:0;">Users — <span class="online-count">0</span></h3></div><div class="discord-sidebar-users loading" style="padding:8px;"></div>';
     document.body.appendChild(sidebar);
 
-    ajax("/directory_items.json", { data: { period: "all", order: "likes_received", asc: false, limit: 200 } }).then(data => {
+    ajax("/directory_items.json", { data: { period: "all", order: "likes_received", asc: false } }).then(data => {
       const allUsers = data.directory_items || [];
       const container = document.querySelector('.discord-sidebar-users');
       const count = document.querySelector('.online-count');
@@ -189,7 +189,7 @@ api.onPageChange(() => {
         item.onclick = (e) => { e.preventDefault(); e.stopPropagation(); showUserCard(item.dataset.username, e); };
       });
       if (fetchTimer) clearInterval(fetchTimer);
-      fetchTimer = setInterval(() => ajax("/directory_items.json", { data: { period: "all", order: "likes_received", asc: false, limit: 200 } }), refreshInterval);
+      fetchTimer = setInterval(() => ajax("/directory_items.json", { data: { period: "all", order: "likes_received", asc: false } }), refreshInterval);
     });
   }
 
