@@ -1,0 +1,343 @@
+// Import Quicksand font from Google Fonts
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap');
+
+// Discord Color Palette
+$discord-dark: #36393f;
+$discord-darker: #2f3136;
+$discord-darkest: #202225;
+$discord-blurple: #5865f2;
+$discord-text: #dcddde;
+$discord-text-muted: #8e9297;
+$discord-text-link: #00b0f4;
+$discord-online: #43b581;
+$discord-hover: #3c3f45;
+
+// Apply Quicksand font to chat
+.chat-message {
+  font-family: 'Quicksand', sans-serif !important;
+}
+
+.chat-composer {
+  font-family: 'Quicksand', sans-serif !important;
+  
+  .chat-composer-input {
+    font-family: 'Quicksand', sans-serif !important;
+  }
+}
+
+// Discord-style chat container
+.chat-container,
+.chat-drawer-container,
+.full-page-chat {
+  background-color: $discord-dark;
+  font-family: 'Quicksand', sans-serif;
+  
+  // Adjust width to accommodate sidebar
+  margin-right: var(--sidebar-width, 240px);
+  transition: margin-right 0.3s ease;
+}
+
+// Discord-style messages
+.chat-message-container {
+  background-color: transparent !important;
+  border: none !important;
+  
+  &:hover {
+    background-color: $discord-hover !important;
+  }
+}
+
+.chat-message {
+  background-color: transparent !important;
+  color: $discord-text !important;
+  border-radius: 0 !important;
+  padding: 8px 16px !important;
+  margin: 0 !important;
+  
+  .chat-message-avatar {
+    border-radius: 50%;
+  }
+  
+  .chat-message-info {
+    color: $discord-text !important;
+    
+    .username {
+      color: $discord-text !important;
+      font-weight: 600;
+      font-family: 'Quicksand', sans-serif;
+    }
+    
+    .time {
+      color: $discord-text-muted;
+      font-size: 0.75rem;
+      margin-left: 8px;
+    }
+  }
+  
+  .chat-message-text {
+    color: $discord-text !important;
+    font-family: 'Quicksand', sans-serif;
+    
+    a {
+      color: $discord-text-link !important;
+      text-decoration: none;
+      
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
+// Discord-style composer
+.chat-composer-container {
+  background-color: $discord-dark !important;
+  border-top: 1px solid $discord-darkest !important;
+  padding: 16px !important;
+}
+
+.chat-composer {
+  background-color: $discord-hover !important;
+  border: none !important;
+  border-radius: 8px !important;
+  padding: 11px !important;
+  color: $discord-text !important;
+  
+  &::placeholder {
+    color: $discord-text-muted !important;
+  }
+  
+  &:focus {
+    background-color: $discord-darker !important;
+  }
+}
+
+// Discord-style channel list
+.chat-channel-list {
+  background-color: $discord-darker !important;
+  
+  .chat-channel-row {
+    background-color: transparent !important;
+    color: $discord-text-muted !important;
+    border-radius: 4px;
+    margin: 2px 8px;
+    padding: 6px 8px !important;
+    font-family: 'Quicksand', sans-serif;
+    
+    &:hover {
+      background-color: $discord-hover !important;
+      color: $discord-text !important;
+    }
+    
+    &.active {
+      background-color: $discord-hover !important;
+      color: $discord-text !important;
+    }
+    
+    .chat-channel-unread-indicator {
+      background-color: $discord-blurple !important;
+    }
+  }
+}
+
+// Online Users Sidebar
+.discord-sidebar {
+  position: fixed;
+  top: 60px; // Account for Discourse header
+  right: 0;
+  width: var(--sidebar-width, 240px);
+  height: calc(100vh - 60px);
+  background-color: $discord-darker;
+  border-left: 1px solid $discord-darkest;
+  overflow-y: auto;
+  z-index: 999;
+  font-family: 'Quicksand', sans-serif;
+  
+  &::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: $discord-darker;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: $discord-darkest;
+    border-radius: 4px;
+    
+    &:hover {
+      background: rgba(0, 0, 0, 0.5);
+    }
+  }
+}
+
+.discord-sidebar-header {
+  padding: 16px;
+  border-bottom: 1px solid $discord-darkest;
+  
+  h3 {
+    color: $discord-text-muted;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 0;
+    font-family: 'Quicksand', sans-serif;
+    
+    .online-count {
+      color: $discord-text;
+    }
+  }
+}
+
+.discord-sidebar-users {
+  padding: 8px;
+}
+
+.discord-user-item {
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  margin: 2px 0;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  
+  &:hover {
+    background-color: $discord-hover;
+  }
+  
+  .user-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    margin-right: 12px;
+    position: relative;
+    
+    img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+    
+    .status-indicator {
+      position: absolute;
+      bottom: -2px;
+      right: -2px;
+      width: 12px;
+      height: 12px;
+      background-color: $discord-online;
+      border: 3px solid $discord-darker;
+      border-radius: 50%;
+    }
+  }
+  
+  .user-info {
+    flex: 1;
+    min-width: 0;
+    
+    .username {
+      color: $discord-text;
+      font-size: 14px;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-family: 'Quicksand', sans-serif;
+    }
+    
+    .user-status {
+      color: $discord-text-muted;
+      font-size: 12px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-family: 'Quicksand', sans-serif;
+    }
+  }
+}
+
+// Hide sidebar when disabled
+body:not(.enable-online-sidebar) {
+  .discord-sidebar {
+    display: none;
+  }
+  
+  .chat-container,
+  .chat-drawer-container,
+  .full-page-chat {
+    margin-right: 0 !important;
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 1200px) {
+  .discord-sidebar {
+    width: 200px;
+  }
+  
+  .chat-container,
+  .chat-drawer-container,
+  .full-page-chat {
+    margin-right: 200px;
+  }
+}
+
+// Dark theme for chat headers
+.chat-channel-header {
+  background-color: $discord-dark !important;
+  border-bottom: 1px solid $discord-darkest !important;
+  color: $discord-text !important;
+  
+  .chat-channel-title {
+    color: $discord-text !important;
+    font-family: 'Quicksand', sans-serif;
+    font-weight: 600;
+    
+    .channel-name {
+      color: $discord-text !important;
+      
+      &::before {
+        content: "# ";
+        color: $discord-text-muted;
+      }
+    }
+  }
+}
+
+// Style buttons to match Discord
+.btn-primary,
+.chat-composer-button {
+  background-color: $discord-blurple !important;
+  border-color: $discord-blurple !important;
+  color: white !important;
+  font-family: 'Quicksand', sans-serif;
+  
+  &:hover {
+    background-color: darken($discord-blurple, 10%) !important;
+    border-color: darken($discord-blurple, 10%) !important;
+  }
+}
+
+// Loading state
+.discord-sidebar-users.loading::after {
+  content: "Loading users...";
+  display: block;
+  padding: 16px;
+  text-align: center;
+  color: $discord-text-muted;
+  font-family: 'Quicksand', sans-serif;
+  font-size: 14px;
+}
+
+// Empty state
+.discord-sidebar-users.empty::after {
+  content: "No users online";
+  display: block;
+  padding: 16px;
+  text-align: center;
+  color: $discord-text-muted;
+  font-family: 'Quicksand', sans-serif;
+  font-size: 14px;
+}
