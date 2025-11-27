@@ -1,164 +1,110 @@
 <script type="text/discourse-plugin" version="0.8.7">
-console.log("[Discord Style Chat] Plugin script loaded!");
+console.log("[Discord Style Chat] Plugin loaded");
 
 api.onPageChange(() => {
-  console.log("[Discord Style Chat] Page changed - initializing...");
-  
   const { ajax } = require("discourse/lib/ajax");
-  
   const sidebarEnabled = (settings.enable_online_sidebar !== false);
   const sidebarWidth = settings.sidebar_width || 240;
   const refreshInterval = settings.user_refresh_interval || 30000;
 
-  console.log("[Discord Style Chat] Settings:", { sidebarEnabled, sidebarWidth, refreshInterval });
-
-  if (!sidebarEnabled) {
-    console.log("[Discord Style Chat] Sidebar is disabled");
-    return;
-  }
+  if (!sidebarEnabled) return;
 
   document.documentElement.style.setProperty('--sidebar-width', sidebarWidth + 'px');
   document.body.classList.add("enable-online-sidebar");
   
   let fetchTimer = null;
 
-  // User Card Functions  
   function showUserCard(username, event) {
-    console.log("[Discord Style Chat] Showing user card for:", username);
     closeUserCard();
     
-    // Create loading card
     const backdrop = document.createElement('div');
     backdrop.className = 'discord-user-card-backdrop';
     backdrop.onclick = closeUserCard;
     
     const card = document.createElement('div');
     card.className = 'discord-user-card';
-    
-    // Position near click
     const rect = event.target.closest('.discord-user-item').getBoundingClientRect();
     card.style.top = Math.min(rect.top, window.innerHeight - 500) + 'px';
     card.style.right = (window.innerWidth - rect.left + 10) + 'px';
-    
-    card.innerHTML = `
-      <button class="user-card-close" onclick="this.closest('.discord-user-card-backdrop').click()">×</button>
-      <div class="user-card-banner"></div>
-      <div class="user-card-body">
-        <div class="user-card-loading">
-          <div class="spinner"></div>
-          <span>Loading...</span>
-        </div>
-      </div>
-    `;
+    card.innerHTML = '<button class="user-card-close" onclick="document.querySelectorAll(\'.discord-user-card-backdrop, .discord-user-card\').forEach(el => el.remove())">×</button><div class="user-card-banner"></div><div class="user-card-body"><div class="user-card-loading"><div class="spinner"></div><span>Loading...</span></div></div>';
     
     document.body.appendChild(backdrop);
     document.body.appendChild(card);
     
-    // Fetch user details
-    ajax(`/u/${username}.json`)
-      .then(userData => {
-        fillUserCard(card, userData.user);
-      })
-      .catch(error => {
-        console.error("[Discord Style Chat] Error fetching user:", error);
-        card.querySelector('.user-card-body').innerHTML = '<div class="user-card-error">Failed to load user card.</div>';
-      });
-  }
-
-  function fillUserCard(card, user) {
-    let avatarUrl = user.avatar_template;
-    if (avatarUrl.startsWith('/')) avatarUrl = window.location.origin + avatarUrl;
-    avatarUrl = avatarUrl.replace('{size}', '256');
-    
-    // Format join date
-    const joinDate = new Date(user.created_at);
-    const joinStr = joinDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-    
-    // Build meta info
-    let metaHTML = '';
-    if (user.created_at) {
-      metaHTML += `<div class="meta-item"><span>📅 Joined ${joinStr}</span></div>`;
-    }
-    if (user.location) {
-      metaHTML += `<div class="meta-item"><span>📍 ${user.location}</span></div>`;
-    }
-    if (user.website_name || user.website) {
-      const website = user.website || user.website_name;
-      metaHTML += `<div class="meta-item"><a href="${website}" target="_blank" rel="noopener">🔗 Website</a></div>`;
-    }
-    
-    // Build groups
-    let groupsHTML = '';
-    if (user.groups && user.groups.length > 0) {
-      groupsHTML = '<div class="groups">' + user.groups.map(g => 
-        `<a href="/g/${g.name}" class="group-chip">${g.display_name || g.name}</a>`
-      ).join('') + '</div>';
-    }
-    
-    // Build badges
-    let badgesHTML = '';
-    if (user.badge_count > 0) {
-      badgesHTML = `
-        <div class="badges-section">
-          <div class="badges-title">Badges</div>
-          <div class="badges-list">
-            <div class="badge"><span>🏅</span><span>${user.badge_count} Badge${user.badge_count !== 1 ? 's' : ''}</span></div>
-          </div>
-        </div>
-      `;
-    }
-    
-    // Calculate trust level progress
-    const trustLevel = user.trust_level !== undefined ? user.trust_level : 0;
-    const trustProgress = ((trustLevel / 4) * 100) + '%';
-    
-    card.querySelector('.user-card-body').innerHTML = `
-      <div class="card-layout">
-        <div class="left-section">
-          <div class="user-card-avatar">
-            <img src="${avatarUrl}" alt="${user.username}">
-            <div class="status-badge"></div>
-          </div>
-          <div class="user-info">
-            <h2 class="display-name">${user.name || user.username}</h2>
-            <p class="username">@${user.username}</p>
-            ${user.title ? `<span class="title-badge">${user.title}</span>` : ''}
-          </div>
-        </div>
-        <div class="right-section">
-          ${user.bio_cooked ? `<div class="bio">${user.bio_cooked}</div>` : ''}
-          ${metaHTML ? `<div class="meta-info">${metaHTML}</div>` : ''}
-          <div class="stats-grid">
-            <div class="stat-item">
-              <span class="stat-value">${user.post_count || 0}</span>
-              <span class="stat-label">Posts</span>
-            </div>
-            <div class="stat-item">
-              <span class="stat-value">${user.like_count || 0}</span>
-              <span class="stat-label">Likes</span>
-            </div>
-            <div class="stat-item">
-              <span class="stat-value">${user.solved_count || 0}</span>
-              <span class="stat-label">Solutions</span>
-            </div>
-          </div>
-          ${badgesHTML}
-          <div class="trust-level">
-            <div class="trust-header">
-              <span class="trust-label">Trust Level</span>
+    ajax("/u/" + username + ".json").then(data => {
+      const user = data.user;
+      let avatar = user.avatar_template;
+      if (avatar.startsWith('/')) avatar = window.location.origin + avatar;
+      avatar = avatar.replace('{size}', '256');
+      
+      const joined = new Date(user.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      
+      const body = card.querySelector('.user-card-body');
+      body.innerHTML = '';
+      
+      const layout = document.createElement('div');
+      layout.className = 'card-layout';
+      
+      const left = document.createElement('div');
+      left.className = 'left-section';
+      left.innerHTML = '<div class="user-card-avatar"><img src="' + avatar + '"><div class="status-badge"></div></div><div class="user-info"><h2 class="display-name">' + (user.name || user.username) + '</h2><p class="username">@' + user.username + '</p>' + (user.title ? '<span class="title-badge">' + user.title + '</span>' : '') + '</div>';
+      
+      const right = document.createElement('div');
+      right.className = 'right-section';
+      
+      if (user.bio_cooked) {
+        const bio = document.createElement('div');
+        bio.className = 'bio';
+        bio.innerHTML = user.bio_cooked;
+        right.appendChild(bio);
+      }
+      
+      const meta = document.createElement('div');
+      meta.className = 'meta-info';
+      meta.innerHTML = '<div class="meta-item">📅 Joined ' + joined + '</div>' + (user.location ? '<div class="meta-item">📍 ' + user.location + '</div>' : '');
+      if (meta.innerHTML) right.appendChild(meta);
+      
+      const stats = document.createElement('div');
+      stats.className = 'stats-grid';
+      stats.innerHTML = '<div class="stat-item"><span class="stat-value">' + (user.post_count || 0) + '</span><span class="stat-label">Posts</span></div><div class="stat-item"><span class="stat-value">' + (user.like_count || 0) + '</span><span class="stat-label">Likes</span></div><div class="stat-item"><span class="stat-value">' + (user.solved_count || 0) + '</span><span class="stat-label">Solutions</span></div>';
+      right.appendChild(stats);
+      
+      if (user.badge_count > 0) {
+        const badges = document.createElement('div');
+        badges.className = 'badges-section';
+        badges.innerHTML = '<div class="badges-title">Badges</div><div class="badges-list"><div class="badge"><span>🏅</span><span>' + user.badge_count + ' Badge' + (user.badge_count !== 1 ? 's' : '') + '</span></div></div>';
+        right.appendChild(badges);
+      }
+      
+      const trust = document.createElement('div');
+      trust.className = 'trust-level';
+      const tl = user.trust_level || 0;
+      trust.innerHTML = '<div class="trust-header"><span class="trust-label">Trust Level</span><span class="trust-value">Level ' + tl + '</span></div><div class="trust-bar"><div class="trust-progress" style="width:' + ((tl / 4) * 100) + '%"></div></div>';
+      right.appendChild(trust);
+      
+      if (user.groups && user.groups.length > 0) {
+        const groups = document.createElement('div');
+        groups.className = 'groups';
+        groups.innerHTML = user.groups.map(g => '<a href="/g/' + g.name + '" class="group-chip">' + (g.display_name || g.name) + '</a>').join('');
+        right.appendChild(groups);
+      }
+      
+      const actions = document.createElement('div');
+      actions.className = 'actions';
+      actions.innerHTML = '<a href="/chat/c/-/' + user.username + '" class="btn btn-primary">Chat</a><a href="/u/' + user.username + '/messages" class="btn btn-secondary">Message</a><a href="/u/' + user.username + '" class="btn btn-secondary">Profile</a>';
+      right.appendChild(actions);
+      
+      layout.appendChild(left);
+      layout.appendChild(right);
+      body.appendChild(layout);
+    });
   }
 
   function closeUserCard() {
-    const backdrop = document.querySelector('.discord-user-card-backdrop');
-    const card = document.querySelector('.discord-user-card');
-    if (backdrop) backdrop.remove();
-    if (card) card.remove();
+    document.querySelectorAll('.discord-user-card-backdrop, .discord-user-card').forEach(el => el.remove());
   }
 
-  // Sidebar Functions
   function createSidebar() {
-    console.log("[Discord Style Chat] Creating sidebar...");
-    
     const existing = document.getElementById('discord-online-users-sidebar');
     if (existing) existing.remove();
 
@@ -166,69 +112,35 @@ api.onPageChange(() => {
     sidebar.id = 'discord-online-users-sidebar';
     sidebar.className = 'discord-sidebar';
     sidebar.style.cssText = 'position:fixed!important;top:60px!important;right:0!important;width:' + sidebarWidth + 'px!important;height:calc(100vh - 60px)!important;background:#2f3136!important;border-left:1px solid #202225!important;z-index:9999!important;overflow-y:auto!important;display:block!important;';
-    sidebar.innerHTML = '<div class="discord-sidebar-header" style="padding:16px;border-bottom:1px solid #202225;"><h3 style="color:#8e9297;font-size:12px;font-weight:600;margin:0;">Online — <span class="online-count">0</span></h3></div><div class="discord-sidebar-users loading" style="padding:8px;color:#dcddde;"></div>';
-
+    sidebar.innerHTML = '<div class="discord-sidebar-header" style="padding:16px;border-bottom:1px solid #202225;"><h3 style="color:#8e9297;font-size:12px;font-weight:600;margin:0;">Online — <span class="online-count">0</span></h3></div><div class="discord-sidebar-users loading" style="padding:8px;"></div>';
     document.body.appendChild(sidebar);
-    console.log("[Discord Style Chat] ✓ Sidebar added");
 
-    fetchOnlineUsers();
-    
-    if (fetchTimer) clearInterval(fetchTimer);
-    fetchTimer = setInterval(fetchOnlineUsers, refreshInterval);
-  }
-
-  function fetchOnlineUsers() {
-    const usersContainer = document.querySelector('.discord-sidebar-users');
-    if (!usersContainer) return;
-
-    ajax("/directory_items.json", { data: { period: "all", order: "likes_received", asc: false, limit: 50 } })
-    .then(data => {
-      const users = data.directory_items || [];
-      console.log("[Discord Style Chat] Fetched " + users.length + " users");
-      updateUsersList(users.slice(0, 20));
-    })
-    .catch(error => {
-      console.error("[Discord Style Chat] Fetch error:", error);
-      usersContainer.innerHTML = '<div style="padding:16px;text-align:center;color:#8e9297;">Error loading users</div>';
+    ajax("/directory_items.json", { data: { period: "all", order: "likes_received", limit: 50 } }).then(data => {
+      const users = (data.directory_items || []).slice(0, 20);
+      const container = document.querySelector('.discord-sidebar-users');
+      const count = document.querySelector('.online-count');
+      
+      if (!container) return;
+      container.classList.remove('loading');
+      count.textContent = users.length;
+      
+      container.innerHTML = users.map(item => {
+        const u = item.user;
+        let av = u.avatar_template;
+        if (av.startsWith('/')) av = window.location.origin + av;
+        av = av.replace('{size}', '96');
+        return '<div class="discord-user-item" data-username="' + u.username + '" style="display:flex;align-items:center;padding:8px;margin:2px 0;border-radius:4px;cursor:pointer;"><div style="width:32px;height:32px;margin-right:12px;position:relative;"><img src="' + av + '" style="width:100%;height:100%;border-radius:50%;"><div style="position:absolute;bottom:-2px;right:-2px;width:12px;height:12px;background:#43b581;border:3px solid #2f3136;border-radius:50%;"></div></div><div style="flex:1;"><div style="color:#dcddde;font-size:14px;font-weight:500;">' + u.username + '</div></div></div>';
+      }).join('');
+      
+      container.querySelectorAll('.discord-user-item').forEach(item => {
+        item.onmouseenter = () => item.style.backgroundColor = '#3c3f45';
+        item.onmouseleave = () => item.style.backgroundColor = 'transparent';
+        item.onclick = (e) => { e.preventDefault(); e.stopPropagation(); showUserCard(item.dataset.username, e); };
+      });
+      
+      if (fetchTimer) clearInterval(fetchTimer);
+      fetchTimer = setInterval(() => ajax("/directory_items.json", { data: { period: "all", order: "likes_received", limit: 50 } }), refreshInterval);
     });
-  }
-
-  function updateUsersList(users) {
-    const usersContainer = document.querySelector('.discord-sidebar-users');
-    const countElement = document.querySelector('.online-count');
-    if (!usersContainer || !countElement) return;
-
-    usersContainer.classList.remove('loading');
-    
-    if (users.length === 0) {
-      countElement.textContent = '0';
-      usersContainer.innerHTML = '<div style="padding:16px;text-align:center;color:#8e9297;">No users online</div>';
-      return;
-    }
-
-    countElement.textContent = users.length;
-
-    usersContainer.innerHTML = users.map(item => {
-      const user = item.user;
-      let avatarUrl = user.avatar_template;
-      if (avatarUrl.startsWith('/')) avatarUrl = window.location.origin + avatarUrl;
-      avatarUrl = avatarUrl.replace('{size}', '96');
-
-      return '<div class="discord-user-item" data-username="' + user.username + '" style="display:flex;align-items:center;padding:8px;margin:2px 0;border-radius:4px;cursor:pointer;"><div style="width:32px;height:32px;margin-right:12px;position:relative;"><img src="' + avatarUrl + '" style="width:100%;height:100%;border-radius:50%;"><div style="position:absolute;bottom:-2px;right:-2px;width:12px;height:12px;background:#43b581;border:3px solid #2f3136;border-radius:50%;"></div></div><div style="flex:1;"><div style="color:#dcddde;font-size:14px;font-weight:500;">' + user.username + '</div>' + (user.name ? '<div style="color:#8e9297;font-size:12px;">' + user.name + '</div>' : '') + '</div></div>';
-    }).join('');
-
-    // Add event handlers with user card
-    usersContainer.querySelectorAll('.discord-user-item').forEach(item => {
-      item.onmouseenter = () => item.style.backgroundColor = '#3c3f45';
-      item.onmouseleave = () => item.style.backgroundColor = 'transparent';
-      item.onclick = (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        showUserCard(item.dataset.username, e);
-      };
-    });
-    
-    console.log("[Discord Style Chat] ✓ User list updated");
   }
 
   createSidebar();
