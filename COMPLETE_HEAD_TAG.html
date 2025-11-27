@@ -1,6 +1,10 @@
 <script type="text/discourse-plugin" version="0.8.7">
 console.log("[Discord Style Chat] Plugin loaded");
 
+// Move variables outside to persist across page changes
+let fetchTimer = null;
+let onlineUsernames = new Set();
+
 api.onPageChange(() => {
   const { ajax } = require("discourse/lib/ajax");
   const sidebarEnabled = (settings.enable_online_sidebar !== false);
@@ -14,15 +18,24 @@ api.onPageChange(() => {
     return;
   }
   
-  // Only show sidebar on chat pages
+  // Check if we're on a chat page
   const isChatPage = window.location.pathname.includes('/chat') || document.querySelector('.full-page-chat, .chat-drawer');
-  if (!isChatPage) return;
+  
+  // If not on chat page, remove sidebar and clean up
+  if (!isChatPage) {
+    const existing = document.getElementById('discord-online-users-sidebar');
+    if (existing) existing.remove();
+    document.body.classList.remove("enable-online-sidebar");
+    if (fetchTimer) {
+      clearInterval(fetchTimer);
+      fetchTimer = null;
+    }
+    return;
+  }
 
+  // We're on a chat page, set up the sidebar
   document.documentElement.style.setProperty('--sidebar-width', sidebarWidth + 'px');
   document.body.classList.add("enable-online-sidebar");
-  
-  let fetchTimer = null;
-  let onlineUsernames = new Set();
 
   function showUserCard(username, event) {
     closeUserCard();
@@ -85,70 +98,19 @@ api.onPageChange(() => {
     sidebar.innerHTML = '<div class="discord-sidebar-header" style="padding:16px;border-bottom:1px solid #202225;"><h3 style="color:#8e9297;font-size:12px;font-weight:600;margin:0;">Users — <span class="online-count">0</span></h3></div><div class="discord-sidebar-users loading" style="padding:8px;"></div>';
     document.body.appendChild(sidebar);
 
-    // Fetch all data concurrently
-    Promise.all([
-      ajax("/sideonline.json").catch(() => ({ users: [] })),
-      ajax("/admin/users/list/admins.json").catch(() => []),
-      ajax("/admin/users/list/moderators.json").catch(() => [])
-    ]).then(results => {
-      const onlineUsersData = results[0];
-      const adminsData = results[1];
-      const moderatorsData = results[2];
+    // Fetch online users from sideonline.json - this is the only source
+    ajax("/sideonline.json").then(data => {
+      const allUsers = data.users || [];
+      console.log('[Discord Chat] Loaded ' + allUsers.length + ' online users from sideonline.json');
       
-      const onlineUsers = onlineUsersData.users || [];
-      console.log('[Discord Chat] Loaded ' + onlineUsers.length + ' online users from sideonline.json');
-      console.log('[Discord Chat] Loaded ' + adminsData.length + ' admins and ' + moderatorsData.length + ' moderators from admin API');
-      
-      // Create a set of online usernames for quick lookup
-      onlineUsernames = new Set(onlineUsers.map(u => u.username));
-      
-      // Create a map of all users by username to avoid duplicates
-      const userMap = new Map();
-      
-      // First, add all online users
-      onlineUsers.forEach(user => {
-        userMap.set(user.username, { ...user, isOnline: true });
-      });
-      
-      // Then add/update admins (mark as staff and their online status)
-      adminsData.forEach(admin => {
-        const existing = userMap.get(admin.username);
-        const isOnline = onlineUsernames.has(admin.username);
-        userMap.set(admin.username, {
-          ...admin,
-          admin: true,
-          moderator: false,
-          isOnline: isOnline,
-          // Preserve avatar_template if it exists
-          avatar_template: existing?.avatar_template || admin.avatar_template
-        });
-      });
-      
-      // Then add/update moderators (mark as staff and their online status)
-      moderatorsData.forEach(mod => {
-        const existing = userMap.get(mod.username);
-        // Only mark as moderator if not already an admin
-        if (!existing?.admin) {
-          const isOnline = onlineUsernames.has(mod.username);
-          userMap.set(mod.username, {
-            ...mod,
-            admin: false,
-            moderator: true,
-            isOnline: isOnline,
-            avatar_template: existing?.avatar_template || mod.avatar_template
-          });
-        }
-      });
-      
-      // Convert map back to array
-      const allUsers = Array.from(userMap.values());
+      onlineUsernames = new Set(allUsers.map(u => u.username));
       
       const container = document.querySelector('.discord-sidebar-users');
       const count = document.querySelector('.online-count');
       if (!container) return;
       container.classList.remove('loading');
       
-      // Categorize users
+      // Categorize users - all are online
       const admins = [];
       const moderators = [];
       const onlineTL4 = [];
@@ -162,8 +124,7 @@ api.onPageChange(() => {
           admins.push(user);
         } else if (user.moderator) {
           moderators.push(user);
-        } else if (user.isOnline) {
-          // Only show non-staff if they're online
+        } else {
           const tl = user.trust_level || 0;
           if (tl === 4) onlineTL4.push(user);
           else if (tl === 3) onlineTL3.push(user);
@@ -176,50 +137,49 @@ api.onPageChange(() => {
       console.log('[Discord Chat] Categorized: Admins=' + admins.length + ', Mods=' + moderators.length + ', TL4=' + onlineTL4.length + ', TL3=' + onlineTL3.length + ', TL2=' + onlineTL2.length + ', TL1=' + onlineTL1.length + ', TL0=' + onlineTL0.length);
       
       let html = '';
-      let totalOnline = onlineUsers.length;
       
-      // Admins - always shown
+      // Admins - only if online
       if (admins.length > 0) {
         html += '<div class="role-group"><div class="role-header" style="color:#e74c3c;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;padding:12px 8px 4px 8px;">Administrators — ' + admins.length + '</div>';
-        admins.forEach(u => html += renderUser(u, u.isOnline));
+        admins.forEach(u => html += renderUser(u));
         html += '</div>';
       }
       
-      // Moderators - always shown
+      // Moderators - only if online
       if (moderators.length > 0) {
         html += '<div class="role-group"><div class="role-header" style="color:#f39c12;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;padding:12px 8px 4px 8px;">Moderators — ' + moderators.length + '</div>';
-        moderators.forEach(u => html += renderUser(u, u.isOnline));
+        moderators.forEach(u => html += renderUser(u));
         html += '</div>';
       }
       
-      // Trust levels - only online users shown
+      // Trust levels - only online users
       if (onlineTL4.length > 0) {
         html += '<div class="role-group"><div class="role-header" style="color:#9b59b6;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;padding:12px 8px 4px 8px;">Trust Level 4 — ' + onlineTL4.length + '</div>';
-        onlineTL4.forEach(u => html += renderUser(u, true));
+        onlineTL4.forEach(u => html += renderUser(u));
         html += '</div>';
       }
       
       if (onlineTL3.length > 0) {
         html += '<div class="role-group"><div class="role-header" style="color:#1abc9c;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;padding:12px 8px 4px 8px;">Trust Level 3 — ' + onlineTL3.length + '</div>';
-        onlineTL3.forEach(u => html += renderUser(u, true));
+        onlineTL3.forEach(u => html += renderUser(u));
         html += '</div>';
       }
       
       if (onlineTL2.length > 0) {
         html += '<div class="role-group"><div class="role-header" style="color:#95a5a6;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;padding:12px 8px 4px 8px;">Trust Level 2 — ' + onlineTL2.length + '</div>';
-        onlineTL2.forEach(u => html += renderUser(u, true));
+        onlineTL2.forEach(u => html += renderUser(u));
         html += '</div>';
       }
       
       if (onlineTL1.length > 0) {
         html += '<div class="role-group"><div class="role-header" style="color:#7f8c8d;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;padding:12px 8px 4px 8px;">Trust Level 1 — ' + onlineTL1.length + '</div>';
-        onlineTL1.forEach(u => html += renderUser(u, true));
+        onlineTL1.forEach(u => html += renderUser(u));
         html += '</div>';
       }
       
       if (onlineTL0.length > 0) {
         html += '<div class="role-group"><div class="role-header" style="color:#5f6c6d;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;padding:12px 8px 4px 8px;">Trust Level 0 — ' + onlineTL0.length + '</div>';
-        onlineTL0.forEach(u => html += renderUser(u, true));
+        onlineTL0.forEach(u => html += renderUser(u));
         html += '</div>';
       }
       
@@ -230,17 +190,17 @@ api.onPageChange(() => {
         item.onclick = (e) => { e.preventDefault(); e.stopPropagation(); showUserCard(item.dataset.username, e); };
       });
       
-      count.textContent = totalOnline;
+      count.textContent = allUsers.length;
     }).catch(err => {
-      console.error('[Discord Chat] Failed to load users:', err);
+      console.error('[Discord Chat] Failed to load users from sideonline.json:', err);
     });
   }
 
-  function renderUser(user, isOnline) {
+  function renderUser(user) {
     const avatar = (user.avatar_template.startsWith('/') ? window.location.origin : '') + user.avatar_template.replace('{size}', '96');
-    const statusColor = isOnline ? '#43b581' : '#747f8d'; // Green if online, gray if offline
+    const statusColor = '#43b581'; // Green - all users shown are online
     
-    return '<div class="discord-user-item ' + (isOnline ? 'online' : 'offline') + '" data-username="' + user.username + '" style="display:flex;align-items:center;padding:8px;margin:2px 0;border-radius:4px;cursor:pointer;"><div style="width:32px;height:32px;margin-right:12px;position:relative;"><img src="' + avatar + '" style="width:100%;height:100%;border-radius:50%;"><div class="status-dot" style="position:absolute;bottom:-2px;right:-2px;width:12px;height:12px;background:' + statusColor + ';border:3px solid #2f3136;border-radius:50%;"></div></div><div style="flex:1;"><div style="color:#dcddde;font-size:14px;font-weight:500;">' + user.username + '</div></div></div>';
+    return '<div class="discord-user-item online" data-username="' + user.username + '" style="display:flex;align-items:center;padding:8px;margin:2px 0;border-radius:4px;cursor:pointer;"><div style="width:32px;height:32px;margin-right:12px;position:relative;"><img src="' + avatar + '" style="width:100%;height:100%;border-radius:50%;"><div class="status-dot" style="position:absolute;bottom:-2px;right:-2px;width:12px;height:12px;background:' + statusColor + ';border:3px solid #2f3136;border-radius:50%;"></div></div><div style="flex:1;"><div style="color:#dcddde;font-size:14px;font-weight:500;">' + user.username + '</div></div></div>';
   }
 
   createSidebar();
