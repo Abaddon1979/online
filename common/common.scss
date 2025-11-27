@@ -594,7 +594,6 @@ $discord-hover: #3c3f45;
     }
   }
 }
-}
 
 .role-group {
   display: flex;
@@ -622,557 +621,561 @@ $discord-hover: #3c3f45;
 // Ensure full page chat also respects it
 .full-page-chat {
   margin-right: var(--sidebar-width, 240px) !important;
-}      // Discord-style User Card Popup
-      .discord-user-card {
-          width: 500px !important;
-          max-width: 90vw !important;
-          z-index: 99999 !important;
-          position: fixed !important;
-          box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6) !important;
+}
 
-          .user-card-body {
-              padding: 70px 20px 20px 20px !important;
-          }
+// Discord-style User Card Popup
+.discord-user-card {
+  width: 500px !important;
+  max-width: 90vw !important;
+  z-index: 99999 !important;
+  position: fixed !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6) !important;
 
-          // Two-column layout
-          .card-layout {
-              display: flex;
-              gap: 20px;
-          }
+  .user-card-body {
+    padding: 70px 20px 20px 20px !important;
+  }
 
-          // Left section
-          .left-section {
-              display: flex;
-              flex-direction: column;
-              align-items: center;
-              gap: 12px;
-              min-width: 120px;
+  // Two-column layout
+  .card-layout {
+    display: flex;
+    gap: 20px;
+  }
 
-              .user-card-avatar {
-                  margin-top: -80px !important;
-                  position: relative !important;
-              }
+  // Left section
+  .left-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    min-width: 120px;
 
-              .user-info {
-                  text-align: center;
+    .user-card-avatar {
+      margin-top: -80px !important;
+      position: relative !important;
+    }
 
-                  h2,
-                  p {
-                      margin: 0;
-                  }
+    .user-info {
+      text-align: center;
 
-                  .display-name {
-                      color: $discord-text;
-                      font-size: 18px;
-                      font-weight: 600;
-                      margin-bottom: 4px;
-                  }
-
-                  .username {
-                      color: $discord-text-muted;
-                      font-size: 14px;
-                      margin-bottom: 8px;
-                  }
-
-                  .title-badge {
-                      display: inline-block;
-                      padding: 4px 12px;
-                      background: $discord-darkest;
-                      color: $discord-text;
-                      border-radius: 12px;
-                      font-size: 12px;
-                      font-weight: 500;
-                  }
-              }
-          }
-
-          // Right section
-          .right-section {
-              flex: 1;
-              display: flex;
-              flex-direction: column;
-              gap: 14px;
-              min-width: 0;
-
-              .bio {
-                  font-size: 14px;
-                  color: $discord-text;
-                  line-height: 1.5;
-
-                  p {
-                      margin: 0 0 8px 0;
-
-                      &:last-child {
-                          margin-bottom: 0;
-                      }
-                  }
-              }
-
-              .meta-info {
-                  display: flex;
-                  flex-direction: column;
-                  gap: 6px;
-                  font-size: 13px;
-                  color: $discord-text-muted;
-
-                  .meta-item a {
-                      color: $discord-text-link;
-                      text-decoration: none;
-
-                      &:hover {
-                          text-decoration: underline;
-                      }
-                  }
-              }
-
-              .stats-grid {
-                  display: grid;
-                  grid-template-columns: repeat(3, 1fr);
-                  gap: 10px;
-
-                  .stat-item {
-                      display: flex;
-                      flex-direction: column;
-                      align-items: center;
-                      padding: 10px;
-                      background: #202225;
-                      border-radius: 6px;
-
-                      .stat-value {
-                          font-size: 18px;
-                          font-weight: 700;
-                          color: $discord-text;
-                      }
-
-                      .stat-label {
-                          font-size: 11px;
-                          color: $discord-text-muted;
-                          margin-top: 4px;
-                          text-transform: uppercase;
-                          letter-spacing: 0.5px;
-                      }
-                  }
-              }
-
-              .badges-section {
-                  .badges-title {
-                      font-size: 12px;
-                      font-weight: 600;
-                      color: $discord-text-muted;
-                      margin: 0 0 8px 0;
-                      text-transform: uppercase;
-                      letter-spacing: 0.5px;
-                  }
-
-                  .badges-list {
-                      display: flex;
-                      gap: 6px;
-                      flex-wrap: wrap;
-
-                      .badge {
-                          display: flex;
-                          align-items: center;
-                          gap: 5px;
-                          padding: 6px 10px;
-                          background: $discord-darkest;
-                          border-radius: 4px;
-                          font-size: 12px;
-                          color: $discord-text;
-                          font-weight: 500;
-                      }
-                  }
-              }
-
-              .trust-level {
-                  .trust-header {
-                      display: flex;
-                      justify-content: space-between;
-                      margin-bottom: 8px;
-
-                      .trust-label {
-                          font-size: 12px;
-                          color: $discord-text-muted;
-                          text-transform: uppercase;
-                          letter-spacing: 0.5px;
-                      }
-
-                      .trust-value {
-                          font-size: 13px;
-                          font-weight: 600;
-                          color: $discord-text;
-                      }
-                  }
-
-                  .trust-bar {
-                      height: 6px;
-                      background: $discord-darkest;
-                      border-radius: 3px;
-                      overflow: hidden;
-
-                      .trust-progress {
-                          height: 100%;
-                          background: linear-gradient(90deg, $discord-blurple, lighten($discord-blurple, 10%));
-                          transition: width 0.3s ease;
-                      }
-                  }
-              }
-
-              .groups {
-                  display: flex;
-                  gap: 6px;
-                  flex-wrap: wrap;
-
-                  .group-chip {
-                      padding: 6px 12px;
-                      background: $discord-darkest;
-                      color: $discord-text;
-                      border-radius: 4px;
-                      font-size: 12px;
-                      text-decoration: none;
-                      transition: background 0.2s;
-                      font-weight: 500;
-
-                      &:hover {
-                          background: lighten($discord-darkest, 5%);
-                      }
-                  }
-              }
-
-              .actions {
-                  display: flex;
-                  gap: 8px;
-                  margin-top: 4px;
-
-                  .btn {
-                      flex: 1;
-                      padding: 10px;
-                      border-radius: 4px;
-                      font-size: 14px;
-                      font-weight: 600;
-                      text-align: center;
-                      cursor: pointer;
-                      transition: all 0.15s ease;
-                      text-decoration: none;
-                      display: block;
-
-                      &.btn-primary {
-                          background-color: $discord-blurple;
-                          color: white;
-
-                          &:hover {
-                              background-color: darken($discord-blurple, 8%);
-                          }
-                      }
-
-                      &.btn-secondary {
-                          background-color: $discord-darkest;
-                          color: $discord-text;
-
-                          &:hover {
-                              background-color: lighten($discord-darkest, 5%);
-                          }
-                      }
-                  }
-              }
-          }
+      h2,
+      p {
+        margin: 0;
       }
 
-      .discord-user-card-backdrop {
-          position: fixed !important;
-          top: 0 !important;
-          left: 0 !important;
-          width: 100% !important;
-          height: 100% !important;
-          background-color: rgba(0, 0, 0, 0.5) !important;
-          z-index: 99998 !important;
+      .display-name {
+        color: $discord-text;
+        font-size: 18px;
+        font-weight: 600;
+        margin-bottom: 4px;
       }
+
+      .username {
+        color: $discord-text-muted;
+        font-size: 14px;
+        margin-bottom: 8px;
+      }
+
+      .title-badge {
+        display: inline-block;
+        padding: 4px 12px;
+        background: $discord-darkest;
+        color: $discord-text;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 500;
+      }
+    }
+  }
+
+  // Right section
+  .right-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    min-width: 0;
+
+    .bio {
+      font-size: 14px;
+      color: $discord-text;
+      line-height: 1.5;
+
+      p {
+        margin: 0 0 8px 0;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
+    }
+
+    .meta-info {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      font-size: 13px;
+      color: $discord-text-muted;
+
+      .meta-item a {
+        color: $discord-text-link;
+        text-decoration: none;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+
+      .stat-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 10px;
+        background: #202225;
+        border-radius: 6px;
+
+        .stat-value {
+          font-size: 18px;
+          font-weight: 700;
+          color: $discord-text;
+        }
+
+        .stat-label {
+          font-size: 11px;
+          color: $discord-text-muted;
+          margin-top: 4px;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+      }
+    }
+
+    .badges-section {
+      .badges-title {
+        font-size: 12px;
+        font-weight: 600;
+        color: $discord-text-muted;
+        margin: 0 0 8px 0;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .badges-list {
+        display: flex;
+        gap: 6px;
+        flex-wrap: wrap;
+
+        .badge {
+          display: flex;
+          align-items: center;
+          gap: 5px;
+          padding: 6px 10px;
+          background: $discord-darkest;
+          border-radius: 4px;
+          font-size: 12px;
+          color: $discord-text;
+          font-weight: 500;
+        }
+      }
+    }
+
+    .trust-level {
+      .trust-header {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 8px;
+
+        .trust-label {
+          font-size: 12px;
+          color: $discord-text-muted;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+        }
+
+        .trust-value {
+          font-size: 13px;
+          font-weight: 600;
+          color: $discord-text;
+        }
+      }
+
+      .trust-bar {
+        height: 6px;
+        background: $discord-darkest;
+        border-radius: 3px;
+        overflow: hidden;
+
+        .trust-progress {
+          height: 100%;
+          background: linear-gradient(90deg, $discord-blurple, lighten($discord-blurple, 10%));
+          transition: width 0.3s ease;
+        }
+      }
+    }
+
+    .groups {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+
+      .group-chip {
+        padding: 6px 12px;
+        background: $discord-darkest;
+        color: $discord-text;
+        border-radius: 4px;
+        font-size: 12px;
+        text-decoration: none;
+        transition: background 0.2s;
+        font-weight: 500;
+
+        &:hover {
+          background: lighten($discord-darkest, 5%);
+        }
+      }
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+      margin-top: 4px;
+
+      .btn {
+        flex: 1;
+        padding: 10px;
+        border-radius: 4px;
+        font-size: 14px;
+        font-weight: 600;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.15s ease;
+        text-decoration: none;
+        display: block;
+
+        &.btn-primary {
+          background-color: $discord-blurple;
+          color: white;
+
+          &:hover {
+            background-color: darken($discord-blurple, 8%);
+          }
+        }
+
+        &.btn-secondary {
+          background-color: $discord-darkest;
+          color: $discord-text;
+
+          &:hover {
+            background-color: lighten($discord-darkest, 5%);
+          }
+        }
+      }
+    }
+  }
+}
+
+.discord-user-card-backdrop {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  background-color: rgba(0, 0, 0, 0.5) !important;
+  z-index: 99998 !important;
+}
+
 // Role group ordering - keep headers at top
 .role-group {
-    display: flex !important;
-    flex-direction: column !important;
+  display: flex !important;
+  flex-direction: column !important;
 
-    .role-header {
-        order: -2 !important;
+  .role-header {
+    order: -2 !important;
+  }
+
+  .discord-user-item {
+    order: 1 !important;
+
+    &.online {
+      order: 0 !important;
     }
-
-    .discord-user-item {
-        order: 1 !important;
-
-        &.online {
-            order: 0 !important;
-        }
-    }
+  }
 }
 
 // User card high z-index
 .discord-user-card {
-    z-index: 999999 !important;
+  z-index: 999999 !important;
 }
 
 .discord-user-card-backdrop {
-    z-index: 999998 !important;
+  z-index: 999998 !important;
 }
+
 // Discord-style User Card - Horizontal Layout
 .discord-user-card-backdrop {
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 100% !important;
-    height: 100% !important;
-    background-color: rgba(0, 0, 0, 0.7) !important;
-    z-index: 999998 !important;
-    backdrop-filter: blur(2px);
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  background-color: rgba(0, 0, 0, 0.7) !important;
+  z-index: 999998 !important;
+  backdrop-filter: blur(2px);
 }
 
 .discord-user-card {
-    position: fixed !important;
-    width: 600px !important;
-    max-width: 90vw !important;
-    max-height: 400px;
-    background: #2f3136 !important;
-    border-radius: 8px !important;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.8) !important;
-    z-index: 999999 !important;
-    overflow: hidden;
-    font-family: 'Quicksand', sans-serif;
+  position: fixed !important;
+  width: 600px !important;
+  max-width: 90vw !important;
+  max-height: 400px;
+  background: #2f3136 !important;
+  border-radius: 8px !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.8) !important;
+  z-index: 999999 !important;
+  overflow: hidden;
+  font-family: 'Quicksand', sans-serif;
 
-    .user-card-close {
-        position: absolute;
-        top: 12px;
-        right: 12px;
-        width: 32px;
-        height: 32px;
-        border-radius: 50%;
-        background: rgba(0, 0, 0, 0.3);
-        border: none;
+  .user-card-close {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.3);
+    border: none;
+    color: #dcddde;
+    font-size: 20px;
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.2s;
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.6);
+      transform: scale(1.1);
+    }
+  }
+
+  .user-card-banner {
+    height: 80px;
+    background: linear-gradient(135deg, #5865f2, #7289da);
+  }
+
+  .user-card-body {
+    padding: 0 20px 20px 20px;
+    position: relative;
+  }
+
+  .user-card-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 6px solid #2f3136;
+    margin-top: -40px;
+    margin-bottom: 12px;
+    overflow: hidden;
+    position: relative;
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .status-badge {
+      position: absolute;
+      bottom: 2px;
+      right: 2px;
+      width: 18px;
+      height: 18px;
+      background: #43b581;
+      border: 4px solid #2f3136;
+      border-radius: 50%;
+    }
+  }
+
+  .user-info {
+    margin-bottom: 16px;
+
+    .display-name {
+      color: #ffffff;
+      font-size: 20px;
+      font-weight: 700;
+      margin: 0 0 4px 0;
+    }
+
+    .username {
+      color: #b9bbbe;
+      font-size: 14px;
+      margin: 0 0 8px 0;
+    }
+
+    .title-badge {
+      display: inline-block;
+      padding: 4px 8px;
+      background: #5865f2;
+      color: white;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-top: 4px;
+    }
+  }
+
+  .user-body-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 16px;
+  }
+
+  .stats-section {
+    .section-title {
+      color: #b9bbbe;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+
+    .stats-grid {
+      display: flex;
+      gap: 12px;
+
+      .stat-box {
+        flex: 1;
+        background: #202225;
+        border-radius: 4px;
+        padding: 8px;
+        text-align: center;
+
+        .stat-value {
+          display: block;
+          color: #ffffff;
+          font-size: 16px;
+          font-weight: 700;
+        }
+
+        .stat-label {
+          display: block;
+          color: #72767d;
+          font-size: 10px;
+          text-transform: uppercase;
+          margin-top: 2px;
+        }
+      }
+    }
+  }
+
+  .badges-section,
+  .groups-section {
+    .section-title {
+      color: #b9bbbe;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+
+    .badges-list,
+    .groups-list {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+
+      .badge-chip,
+      .group-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        padding: 4px 8px;
+        background: #202225;
         color: #dcddde;
-        font-size: 20px;
-        cursor: pointer;
-        z-index: 10;
-        transition: all 0.2s;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 500;
+        text-decoration: none;
+        transition: background 0.2s;
 
         &:hover {
-            background: rgba(0, 0, 0, 0.6);
-            transform: scale(1.1);
+          background: #3c3f45;
         }
+      }
+    }
+  }
+
+  .user-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid #202225;
+
+    .btn {
+      flex: 1;
+      padding: 10px 16px;
+      border-radius: 4px;
+      font-size: 14px;
+      font-weight: 600;
+      text-align: center;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: all 0.15s;
+      display: block;
+
+      &.btn-primary {
+        background: #5865f2;
+        color: white;
+
+        &:hover {
+          background: #4752c4;
+        }
+      }
+
+      &.btn-secondary {
+        background: #4f545c;
+        color: #ffffff;
+
+        &:hover {
+          background: #5d6269;
+        }
+      }
+    }
+  }
+
+  .user-card-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    gap: 12px;
+
+    .spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid #202225;
+      border-top-color: #5865f2;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
     }
 
-    .user-card-banner {
-        height: 80px;
-        background: linear-gradient(135deg, #5865f2, #7289da);
+    span {
+      color: #b9bbbe;
+      font-size: 14px;
     }
-
-    .user-card-body {
-        padding: 0 20px 20px 20px;
-        position: relative;
-    }
-
-    .user-card-avatar {
-        width: 80px;
-        height: 80px;
-        border-radius: 50%;
-        border: 6px solid #2f3136;
-        margin-top: -40px;
-        margin-bottom: 12px;
-        overflow: hidden;
-        position: relative;
-
-        img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .status-badge {
-            position: absolute;
-            bottom: 2px;
-            right: 2px;
-            width: 18px;
-            height: 18px;
-            background: #43b581;
-            border: 4px solid #2f3136;
-            border-radius: 50%;
-        }
-    }
-
-    .user-info {
-        margin-bottom: 16px;
-
-        .display-name {
-            color: #ffffff;
-            font-size: 20px;
-            font-weight: 700;
-            margin: 0 0 4px 0;
-        }
-
-        .username {
-            color: #b9bbbe;
-            font-size: 14px;
-            margin: 0 0 8px 0;
-        }
-
-        .title-badge {
-            display: inline-block;
-            padding: 4px 8px;
-            background: #5865f2;
-            color: white;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: 600;
-            margin-top: 4px;
-        }
-    }
-
-    .user-body-content {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 16px;
-        margin-bottom: 16px;
-    }
-
-    .stats-section {
-        .section-title {
-            color: #b9bbbe;
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 8px;
-        }
-
-        .stats-grid {
-            display: flex;
-            gap: 12px;
-
-            .stat-box {
-                flex: 1;
-                background: #202225;
-                border-radius: 4px;
-                padding: 8px;
-                text-align: center;
-
-                .stat-value {
-                    display: block;
-                    color: #ffffff;
-                    font-size: 16px;
-                    font-weight: 700;
-                }
-
-                .stat-label {
-                    display: block;
-                    color: #72767d;
-                    font-size: 10px;
-                    text-transform: uppercase;
-                    margin-top: 2px;
-                }
-            }
-        }
-    }
-
-    .badges-section,
-    .groups-section {
-        .section-title {
-            color: #b9bbbe;
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 8px;
-        }
-
-        .badges-list,
-        .groups-list {
-            display: flex;
-            gap: 6px;
-            flex-wrap: wrap;
-
-            .badge-chip,
-            .group-chip {
-                display: inline-flex;
-                align-items: center;
-                gap: 4px;
-                padding: 4px 8px;
-                background: #202225;
-                color: #dcddde;
-                border-radius: 12px;
-                font-size: 12px;
-                font-weight: 500;
-                text-decoration: none;
-                transition: background 0.2s;
-
-                &:hover {
-                    background: #3c3f45;
-                }
-            }
-        }
-    }
-
-    .user-actions {
-        display: flex;
-        gap: 8px;
-        margin-top: 16px;
-        padding-top: 16px;
-        border-top: 1px solid #202225;
-
-        .btn {
-            flex: 1;
-            padding: 10px 16px;
-            border-radius: 4px;
-            font-size: 14px;
-            font-weight: 600;
-            text-align: center;
-            text-decoration: none;
-            border: none;
-            cursor: pointer;
-            transition: all 0.15s;
-            display: block;
-
-            &.btn-primary {
-                background: #5865f2;
-                color: white;
-
-                &:hover {
-                    background: #4752c4;
-                }
-            }
-
-            &.btn-secondary {
-                background: #4f545c;
-                color: #ffffff;
-
-                &:hover {
-                    background: #5d6269;
-                }
-            }
-        }
-    }
-
-    .user-card-loading {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        padding: 60px 20px;
-        gap: 12px;
-
-        .spinner {
-            width: 40px;
-            height: 40px;
-            border: 3px solid #202225;
-            border-top-color: #5865f2;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-
-        span {
-            color: #b9bbbe;
-            font-size: 14px;
-        }
-    }
+  }
 }
 
 @keyframes spin {
-    to {
-        transform: rotate(360deg);
-    }
+  to {
+    transform: rotate(360deg);
+  }
 }
