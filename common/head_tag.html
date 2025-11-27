@@ -146,22 +146,6 @@ api.onPageChange(() => {
           <div class="trust-level">
             <div class="trust-header">
               <span class="trust-label">Trust Level</span>
-              <span class="trust-value">Level ${trustLevel}</span>
-            </div>
-            <div class="trust-bar">
-              <div class="trust-progress" style="width: ${trustProgress}"></div>
-            </div>
-          </div>
-          ${groupsHTML}
-          <div class="actions">
-            <a href="/u/${user.username}" class="btn btn-primary">Profile</a>
-            <a href="/u/${user.username}/messages" class="btn btn-secondary">Message</a>
-          </div>
-        </div>
-      </div>
-    `;
-    
-    console.log("[Discord Style Chat] ✓ User card filled");
   }
 
   function closeUserCard() {
