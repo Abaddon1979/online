@@ -1,0 +1,14 @@
+In head_tag.html, find this line (around line 10-14):
+
+  if (!sidebarEnabled) return;
+  
+  // Only show sidebar on chat pages
+
+And change it to:
+
+  if (!sidebarEnabled) return;
+  
+  // Only show sidebar on desktop (screens wider than 1024px)
+  if (window.innerWidth <= 1024) return;
+  
+  // Only show sidebar on chat pages
