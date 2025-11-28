@@ -23,25 +23,17 @@ api.onPageChange(() => {
   
   // If not on chat page, remove sidebar and clean up
   if (!isChatPage) {
-    console.log('[Discord Chat] Not on chat page, cleaning up sidebar');
     const existing = document.getElementById('discord-online-users-sidebar');
-    if (existing) {
-      existing.remove();
-      console.log('[Discord Chat] Sidebar removed');
-    }
+    if (existing) existing.remove();
     document.body.classList.remove("enable-online-sidebar");
-    document.documentElement.style.removeProperty('--sidebar-width');
     if (fetchTimer) {
       clearInterval(fetchTimer);
       fetchTimer = null;
-      console.log('[Discord Chat] Timer cleared');
     }
     return;
   }
 
-  console.log('[Discord Chat] On chat page, setting up sidebar');
-
-  //We're on a chat page, set up the sidebar
+  // We're on a chat page, set up the sidebar
   document.documentElement.style.setProperty('--sidebar-width', sidebarWidth + 'px');
   document.body.classList.add("enable-online-sidebar");
 
