@@ -2,8 +2,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap');
 
 // Import additional styles
-@import "common/composer-enhanced";
-@import "common/mobile-hide-sidebar";
+@import "composer-enhanced";
+@import "mobile-hide-sidebar";
 
 // Discord Color Palette
 $discord-dark: #36393f;
@@ -565,5 +565,3 @@ body:not(.enable-online-sidebar) {
     opacity: 1;
   }
 }
-
-@import "common/chat-styling";
