@@ -65,7 +65,17 @@ $discord-hover: #3c3f45;
     height: 40px !important;
     margin-right: 16px !important;
     flex-shrink: 0 !important;
-    margin-top: 2px !important;
+    margin-top: 0 !important;
+    margin-bottom: 4px !important; /* slight bottom space to visually push avatar up */
+    overflow: hidden; /* ensure circle crop */
+  }
+
+  .chat-message-avatar img {
+    width: 100% !important;
+    height: 100% !important;
+    border-radius: 50% !important;
+    object-fit: cover;
+    display: block;
   }
 
   .chat-message-content {
