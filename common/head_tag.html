@@ -9,6 +9,7 @@ api.onPageChange(() => {
   const sidebarEnabled = (settings.enable_online_sidebar !== false);
   const sidebarWidth = settings.sidebar_width || 240;
   const refreshInterval = settings.user_refresh_interval || 30000;
+  const currentUser = api.getCurrentUser ? api.getCurrentUser() : null;
 
   if (!sidebarEnabled) return;
   if (window.innerWidth <= 1024 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) return;
@@ -78,7 +79,7 @@ api.onPageChange(() => {
       const editIconSVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>';
       
       const savedStatus = localStorage.getItem('user_status_' + username) || '';
-      const isOwnProfile = user.username === (window.currentUser?.username || '');
+      const isOwnProfile = currentUser && user.username === currentUser.username;
       
       // Only show edit button if viewing own profile
       const editButtonHTML = isOwnProfile ? '<button class="edit-background-btn" title="Change Background">' + editIconSVG + '</button>' : '';
