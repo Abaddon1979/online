@@ -47,48 +47,151 @@ api.onPageChange(() => {
 
   function showUserCard(username, event) {
     closeUserCard();
+
     const backdrop = document.createElement('div');
     backdrop.className = 'discord-user-card-backdrop';
     backdrop.onclick = closeUserCard;
-    
+
     const card = document.createElement('div');
     card.className = 'discord-user-card';
-    
-    const clickX = event.clientX;
-    const clickY = event.clientY;
+
+    const clickX = (event && typeof event.clientX === "number") ? event.clientX : window.innerWidth / 2;
+    const clickY = (event && typeof event.clientY === "number") ? event.clientY : window.innerHeight / 2;
     const cardWidth = 600;
     const cardHeight = 400;
-    
+
     let left = clickX + 10;
     if (left + cardWidth > window.innerWidth) {
       left = clickX - cardWidth - 10;
     }
-    
+
     let top = clickY + 10;
     if (top + cardHeight > window.innerHeight) {
       top = Math.max(10, clickY - cardHeight - 10);
     }
-    
+
     card.style.left = left + 'px';
     card.style.top = top + 'px';
     card.style.position = 'fixed';
-    
-    card.innerHTML = '<button class="user-card-close" onclick="document.querySelectorAll(\'.discord-user-card-backdrop, .discord-user-card\').forEach(el => el.remove())">×</button><div class="user-card-banner"></div><div class="user-card-body"><div class="user-card-loading"><div class="spinner"></div><span>Loading...</span></div></div>';
-    
+
+    // Initial loading state with close button
+    card.innerHTML =
+      '<div class="user-card-banner"></div>' +
+      '<div class="user-card-body">' +
+        '<button class="user-card-close" type="button">×</button>' +
+        '<div class="user-card-loading">' +
+          '<div class="spinner"></div>' +
+          '<span>Loading...</span>' +
+        '</div>' +
+      '</div>';
+
     document.body.appendChild(backdrop);
     document.body.appendChild(card);
-    
+
+    function wireClose() {
+      const closeBtn = card.querySelector('.user-card-close');
+      if (closeBtn) {
+        closeBtn.onclick = function (e) {
+          if (e && typeof e.stopPropagation === "function") {
+            e.stopPropagation();
+          }
+          closeUserCard();
+        };
+      }
+    }
+
+    wireClose();
+
     ajax("/u/" + username + ".json").then(data => {
       const user = data.user;
-      const avatar = (user.avatar_template.startsWith('/') ? window.location.origin : '') + user.avatar_template.replace('{size}', '256');
-      
+      const avatar =
+        (user.avatar_template.startsWith('/') ? window.location.origin : '') +
+        user.avatar_template.replace('{size}', '256');
+
       const body = card.querySelector('.user-card-body');
-      body.innerHTML = '<div class="user-card-avatar"><img src="' + avatar + '"><div class="status-badge"></div></div><div class="user-info"><h2 class="display-name">' + (user.name || user.username) + '</h2><p class="username">@' + user.username + '</p>' + (user.title ? '<span class="title-badge">' + user.title + '</span>' : '') + '</div><div class="user-body-content"><div><div class="stats-section"><div class="section-title">Stats</div><div class="stats-grid"><div class="stat-box"><span class="stat-value">' + (user.post_count || 0) + '</span><span class="stat-label">Posts</span></div><div class="stat-box"><span class="stat-value">' + (user.like_count || 0) + '</span><span class="stat-label">Likes</span></div><div class="stat-box"><span class="stat-value">' + (user.solved_count || 0) + '</span><span class="stat-label">Solutions</span></div></div></div></div><div>' + (user.badge_count > 0 ? '<div class="badges-section"><div class="section-title">Badges</div><div class="badges-list"><div class="badge-chip"><span>🏅</span><span>' + user.badge_count + ' Badge' + (user.badge_count !== 1 ? 's' : '') + '</span></div></div></div>' : '') + (user.groups && user.groups.length > 0 ? '<div class="groups-section"><div class="section-title">Groups</div><div class="groups-list">' + user.groups.slice(0, 4).map(g => '<a href="/g/' + g.name + '" class="group-chip">' + (g.display_name || g.name) + '</a>').join('') + '</div></div>' : '') + '</div></div><div class="user-actions"><a href="/new-message?username=' + user.username + '&type=chat" class="btn btn-primary">💬 Chat</a><a href="/new-message?username=' + user.username + '" class="btn btn-secondary">✉️ Message</a><a href="/u/' + user.username + '" class="btn btn-secondary">👤 Profile</a></div>';
+      if (!body) {
+        return;
+      }
+
+      // Final content with close button preserved
+      body.innerHTML =
+        '<button class="user-card-close" type="button">×</button>' +
+        '<div class="user-card-avatar">' +
+          '<img src="' + avatar + '">' +
+          '<div class="status-badge"></div>' +
+        '</div>' +
+        '<div class="user-info">' +
+          '<h2 class="display-name">' + (user.name || user.username) + '</h2>' +
+          '<p class="username">@' + user.username + '</p>' +
+          (user.title
+            ? '<span class="title-badge">' + user.title + '</span>'
+            : '') +
+        '</div>' +
+        '<div class="user-body-content">' +
+          '<div>' +
+            '<div class="stats-section">' +
+              '<div class="section-title">Stats</div>' +
+              '<div class="stats-grid">' +
+                '<div class="stat-box">' +
+                  '<span class="stat-value">' + (user.post_count || 0) + '</span>' +
+                  '<span class="stat-label">Posts</span>' +
+                '</div>' +
+                '<div class="stat-box">' +
+                  '<span class="stat-value">' + (user.like_count || 0) + '</span>' +
+                  '<span class="stat-label">Likes</span>' +
+                '</div>' +
+                '<div class="stat-box">' +
+                  '<span class="stat-value">' + (user.solved_count || 0) + '</span>' +
+                  '<span class="stat-label">Solutions</span>' +
+                '</div>' +
+              '</div>' +
+            '</div>' +
+          '</div>' +
+          '<div>' +
+            (user.badge_count > 0
+              ? '<div class="badges-section">' +
+                  '<div class="section-title">Badges</div>' +
+                  '<div class="badges-list">' +
+                    '<div class="badge-chip">' +
+                      '<span>🏅</span>' +
+                      '<span>' + user.badge_count + ' Badge' +
+                        (user.badge_count !== 1 ? 's' : '') +
+                      '</span>' +
+                    '</div>' +
+                  '</div>' +
+                '</div>'
+              : '') +
+            (user.groups && user.groups.length > 0
+              ? '<div class="groups-section">' +
+                  '<div class="section-title">Groups</div>' +
+                  '<div class="groups-list">' +
+                    user.groups
+                      .slice(0, 4)
+                      .map(g =>
+                        '<a href="/g/' + g.name + '" class="group-chip">' +
+                          (g.display_name || g.name) +
+                        '</a>'
+                      )
+                      .join('') +
+                  '</div>' +
+                '</div>'
+              : '') +
+          '</div>' +
+        '</div>' +
+        '<div class="user-actions">' +
+          '<a href="/new-message?username=' + user.username + '&type=chat" class="btn btn-primary">💬 Chat</a>' +
+          '<a href="/new-message?username=' + user.username + '" class="btn btn-secondary">✉️ Message</a>' +
+          '<a href="/u/' + user.username + '" class="btn btn-secondary">👤 Profile</a>' +
+        '</div>';
+
+      wireClose();
     });
   }
 
   function closeUserCard() {
-    document.querySelectorAll('.discord-user-card-backdrop, .discord-user-card').forEach(el => el.remove());
+    document
+      .querySelectorAll('.discord-user-card-backdrop, .discord-user-card')
+      .forEach(el => el.remove());
   }
 
   function updateOnlineStatus() {

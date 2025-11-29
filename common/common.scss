@@ -405,11 +405,11 @@ body:not(.enable-online-sidebar) {
   font-size: 14px;
 }
 
-// Discord-style User Card Popup
+ // Discord-style User Card Popup
 .discord-user-card {
   position: fixed;
   width: 340px;
-  background-color: $discord-darker;
+  background-color: #19191d; // Dark popover background
   border-radius: 8px;
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
   z-index: 10000;
@@ -434,7 +434,7 @@ body:not(.enable-online-sidebar) {
     position: relative;
     padding: 16px;
     padding-top: 70px;
-    background-color: $discord-darker;
+    background-color: #19191d; // Match popover background
   }
 
   .user-card-avatar {
