@@ -651,6 +651,7 @@ button.send {
 // Toolbar buttons (emoji, upload, etc.) - Discord-style icon chips
 .chat-emoji-picker-btn,
 .emoji-picker-btn,
+.emoji-picker-trigger,
 .chat-upload-btn,
 .upload-btn,
 .chat-composer-inline-buttons button {
@@ -685,6 +686,39 @@ button.send {
   &:active {
     transform: translateY(0);
   }
+}
+
+// Emoji picker button – replace core smile glyph with a Discord‑style colored emoji
+.chat-composer__wrapper .emoji-picker-trigger,
+.chat-composer .emoji-picker-trigger {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px !important;
+  background-color: transparent !important;
+  color: #b9bbbe !important;
+  box-shadow: none !important;
+}
+
+// Hide the default SVG icon
+.chat-composer__wrapper .emoji-picker-trigger svg.d-icon,
+.chat-composer .emoji-picker-trigger svg.d-icon {
+  display: none !important;
+}
+
+// Show a colored emoji instead
+.chat-composer__wrapper .emoji-picker-trigger::before,
+.chat-composer .emoji-picker-trigger::before {
+  content: "😄";
+  font-size: 18px;
+  line-height: 1;
+  display: inline-block;
+}
+
+// Hover state to match Discord feel
+.chat-composer__wrapper .emoji-picker-trigger:hover,
+.chat-composer .emoji-picker-trigger:hover {
+  background-color: #3c3f45 !important;
+  color: #ffffff !important;
 }
 
 // Align inline composer buttons horizontally
