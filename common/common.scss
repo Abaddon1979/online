@@ -755,3 +755,30 @@ button.send {
         display: block !important;
     }
 }
+
+// Strong override for emoji picker icon in chat composer – hide core SVG and show a clean emoji
+.chat-composer__input-container .emoji-picker-trigger svg,
+.chat-composer__input-container .emoji-picker-trigger .d-icon {
+  display: none !important;
+}
+
+.chat-composer__input-container .emoji-picker-trigger::before {
+  content: "😊";
+  font-size: 18px;
+  line-height: 1;
+  display: inline-block;
+}
+
+.chat-composer__input-container .emoji-picker-trigger {
+  width: 32px;
+  height: 32px;
+  border-radius: 999px !important;
+  background-color: transparent !important;
+  color: #b9bbbe !important;
+  box-shadow: none !important;
+}
+
+.chat-composer__input-container .emoji-picker-trigger:hover {
+  background-color: #3c3f45 !important;
+  color: #ffffff !important;
+}
