@@ -79,15 +79,15 @@ api.onPageChange(() => {
       
       const savedStatus = localStorage.getItem('user_status_' + username) || '';
       const isOwnProfile = user.username === (window.currentUser?.username || '');
+      const editButtonHTML = isOwnProfile ? '<button class="edit-background-btn" title="Change Background">' + editIconSVG + '</button>' : '';
       
-      leftSection.innerHTML = '<div class="user-card-avatar"><img src="' + avatar + '"><div class="status-badge"></div><button class="edit-background-btn" title="Change Background">' + editIconSVG + '</button></div><div class="user-info"><h2 class="display-name">' + (user.name || user.username) + '</h2><p class="username">@' + user.username + '</p><div class="posts-stat"><span class="stat-value">' + (user.post_count || 0) + '</span><span class="stat-label">Posts</span></div></div>' + rolesHTML;
+      leftSection.innerHTML = '<div class="user-card-avatar"><img src="' + avatar + '"><div class="status-badge"></div>' + editButtonHTML + '</div><div class="user-info"><h2 class="display-name">' + (user.name || user.username) + '</h2><p class="username">@' + user.username + '</p><div class="posts-stat"><span class="stat-value">' + (user.post_count || 0) + '</span><span class="stat-label">Posts</span></div></div>' + rolesHTML;
       
       rightSection.innerHTML = '<div class="status-box"><div class="status-label">Status</div><textarea placeholder="' + (isOwnProfile ? 'Set your status...' : 'User status...') + '" ' + (isOwnProfile ? '' : 'readonly') + '>' + savedStatus + '</textarea></div><div class="user-actions"><a href="/new-message?username=' + user.username + '&type=chat" class="btn btn-primary">💬 Chat</a><a href="/new-message?username=' + user.username + '" class="btn btn-secondary">✉️ Message</a><a href="/u/' + user.username + '" class="btn btn-secondary">👤 Profile</a></div>';
       
-      const editBtn = card.querySelector('.edit-background-btn');
-      if (editBtn) editBtn.onclick = (e) => { e.stopPropagation(); openTenorPicker(username, card); };
-      
       if (isOwnProfile) {
+        const editBtn = card.querySelector('.edit-background-btn');
+        if (editBtn) editBtn.onclick = (e) => { e.stopPropagation(); openTenorPicker(username, card); };
         const statusTextarea = card.querySelector('.status-box textarea');
         if (statusTextarea) statusTextarea.addEventListener('input', function() { localStorage.setItem('user_status_' + username, this.value); });
       }
@@ -107,7 +107,7 @@ api.onPageChange(() => {
     const resultsDiv = modal.querySelector('.tenor-results');
     closeBtn.onclick = () => modal.remove();
     
-    function searchTenor(query) {
+   function searchTenor(query) {
       const url = `https://tenor.googleapis.com/v2/search?q=${encodeURIComponent(query || 'anime aesthetic')}&key=AIzaSyAyimkuYQYF_FXVALexPuGQctUWRURdCYQ&limit=30&media_filter=gif,webp`;
       fetch(url).then(r => r.json()).then(data => {
         resultsDiv.innerHTML = '';
