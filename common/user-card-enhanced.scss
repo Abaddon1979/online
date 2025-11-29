@@ -1,66 +1,364 @@
-// Enhanced Discord-style User Card with modern sleek design
+// Enhanced Discord-style User Card - Horizontal Layout
 .discord-user-card {
-    width: 520px !important;
+    width: 700px !important;
     max-width: 92vw !important;
+    height: 320px !important;
     z-index: 99999 !important;
     position: fixed !important;
-    background: linear-gradient(135deg, #2f3136 0%, #26282d 100%) !important;
+    background: #2f3136 !important;
     border-radius: 16px !important;
     box-shadow: 0 12px 40px rgba(0, 0, 0, 0.7),
         0 0 0 1px rgba(255, 255, 255, 0.05) !important;
     overflow: hidden !important;
     backdrop-filter: blur(20px) !important;
+    display: flex !important;
+    flex-direction: row !important;
 
-    // Banner with custom background support
-    .user-card-banner {
-        position: relative;
-        height: 120px;
-        background: linear-gradient(135deg, #5865f2 0%, #4752c4 100%);
+    // Full background with animated webp/gif
+    &::before {
+        content: '';
+        position: absolute;
+        inset: 0;
         background-size: cover;
         background-position: center;
-        overflow: hidden;
+        background-repeat: no-repeat;
+        opacity: 0.15;
+        z-index: 0;
+    }
 
-        &::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.3) 100%);
+    &[data-bg-url]::before {
+        background-image: var(--user-card-bg);
+    }
+
+    // Left section - Avatar and basic info
+    .user-card-left {
+        position: relative;
+        width: 280px;
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background: linear-gradient(135deg, rgba(88, 101, 242, 0.1) 0%, rgba(88, 101, 242, 0.05) 100%);
+        border-right: 1px solid rgba(255, 255, 255, 0.08);
+        z-index: 1;
+
+        .user-card-avatar {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 16px;
+            position: relative;
+            border-radius: 50%;
+            background: #2f3136;
+            padding: 4px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4),
+                0 0 0 4px rgba(88, 101, 242, 0.3);
+
+            img {
+                width: 100%;
+                height: 100%;
+                border-radius: 50%;
+                object-fit: cover;
+            }
+
+            .status-badge {
+                position: absolute;
+                bottom: 4px;
+                right: 4px;
+                width: 24px;
+                height: 24px;
+                background: #43b581;
+                border: 4px solid #2f3136;
+                border-radius: 50%;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            }
+
+            // Edit button - bottom left of avatar
+            .edit-background-btn {
+                position: absolute;
+                bottom: -4px;
+                left: -4px;
+                width: 32px;
+                height: 32px;
+                border-radius: 50%;
+                background: rgba(0, 0, 0, 0.7);
+                backdrop-filter: blur(10px);
+                border: 2px solid rgba(255, 255, 255, 0.3);
+                cursor: pointer;
+                transition: all 0.2s ease;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 10;
+
+                svg {
+                    width: 16px;
+                    height: 16px;
+                    fill: #ffffff;
+                }
+
+                &:hover {
+                    background: rgba(88, 101, 242, 0.9);
+                    border-color: rgba(255, 255, 255, 0.5);
+                    transform: scale(1.1);
+                }
+            }
         }
 
-        // Edit background button
-        .edit-background-btn {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(10px);
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            color: #fff;
-            font-size: 16px;
-            cursor: pointer;
+        .user-info {
+            text-align: center;
+            width: 100%;
+
+            .display-name {
+                color: #ffffff;
+                font-size: 20px;
+                font-weight: 700;
+                margin: 0 0 4px 0;
+                text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+            }
+
+            .username {
+                color: #b9bbbe;
+                font-size: 13px;
+                margin: 0 0 12px 0;
+                font-weight: 400;
+            }
+
+            .title-badge {
+                display: inline-flex;
+                align-items: center;
+                padding: 5px 12px;
+                background: linear-gradient(135deg, #5865f2 0%, #4752c4 100%);
+                color: #ffffff;
+                border-radius: 16px;
+                font-size: 11px;
+                font-weight: 600;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                box-shadow: 0 4px 12px rgba(88, 101, 242, 0.3);
+            }
+        }
+
+        // Posts stat box at bottom
+        .posts-stat {
+            margin-top: auto;
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, rgba(88, 101, 242, 0.15) 0%, rgba(88, 101, 242, 0.08) 100%);
+            border-radius: 12px;
+            border: 1px solid rgba(88, 101, 242, 0.3);
+            text-align: center;
             transition: all 0.2s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 10;
 
             &:hover {
-                background: rgba(0, 0, 0, 0.7);
-                border-color: rgba(255, 255, 255, 0.4);
-                transform: scale(1.1);
+                background: linear-gradient(135deg, rgba(88, 101, 242, 0.2) 0%, rgba(88, 101, 242, 0.1) 100%);
+                border-color: rgba(88, 101, 242, 0.4);
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(88, 101, 242, 0.3);
+            }
+
+            .stat-value {
+                font-size: 32px;
+                font-weight: 700;
+                color: #ffffff;
+                display: block;
+                margin-bottom: 4px;
+                text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            }
+
+            .stat-label {
+                font-size: 11px;
+                color: #b9bbbe;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                font-weight: 600;
             }
         }
     }
 
-    .user-card-body {
-        padding: 0 24px 24px 24px !important;
+    // Right section - Status, Roles, Badges, Actions
+    .user-card-right {
+        flex: 1;
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
         position: relative;
+        z-index: 1;
+        overflow-y: auto;
+
+        // Status box
+        .status-box {
+            padding: 12px 16px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+
+            .status-label {
+                font-size: 10px;
+                color: #8e9297;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                font-weight: 700;
+                margin-bottom: 6px;
+            }
+
+            .status-text {
+                color: #dcddde;
+                font-size: 14px;
+                font-weight: 500;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+
+                .status-indicator {
+                    width: 10px;
+                    height: 10px;
+                    border-radius: 50%;
+                    background: #43b581;
+                    box-shadow: 0 0 8px rgba(67, 181, 129, 0.6);
+                }
+            }
+        }
+
+        // Roles section with chips
+        .roles-section {
+            .section-title {
+                font-size: 10px;
+                font-weight: 700;
+                color: #8e9297;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                margin-bottom: 10px;
+            }
+
+            .roles-list {
+                display: flex;
+                gap: 8px;
+                flex-wrap: wrap;
+            }
+
+            .role-chip {
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                padding: 7px 13px;
+                background: linear-gradient(135deg, rgba(255, 255, 255, 0.1) 0%, rgba(255, 255, 255, 0.05) 100%);
+                border: 1px solid rgba(255, 255, 255, 0.15);
+                border-radius: 18px;
+                font-size: 12px;
+                color: #dcddde;
+                font-weight: 600;
+                text-decoration: none;
+                transition: all 0.2s ease;
+                backdrop-filter: blur(10px);
+
+                &:hover {
+                    background: linear-gradient(135deg, rgba(88, 101, 242, 0.3) 0%, rgba(88, 101, 242, 0.2) 100%);
+                    border-color: rgba(88, 101, 242, 0.5);
+                    transform: translateY(-2px);
+                    box-shadow: 0 4px 12px rgba(88, 101, 242, 0.3);
+                    color: #ffffff;
+                }
+            }
+        }
+
+        // Badges section with chips
+        .badges-section {
+            .section-title {
+                font-size: 10px;
+                font-weight: 700;
+                color: #8e9297;
+                text-transform: uppercase;
+                letter-spacing: 1px;
+                margin-bottom: 10px;
+            }
+
+            .badges-list {
+                display: flex;
+                gap: 8px;
+                flex-wrap: wrap;
+            }
+
+            .badge-chip {
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                padding: 7px 13px;
+                background: linear-gradient(135deg, rgba(255, 200, 0, 0.15) 0%, rgba(255, 200, 0, 0.08) 100%);
+                border: 1px solid rgba(255, 200, 0, 0.3);
+                border-radius: 18px;
+                font-size: 12px;
+                color: #ffd700;
+                font-weight: 600;
+                transition: all 0.2s ease;
+                backdrop-filter: blur(10px);
+
+                &:hover {
+                    background: linear-gradient(135deg, rgba(255, 200, 0, 0.25) 0%, rgba(255, 200, 0, 0.15) 100%);
+                    border-color: rgba(255, 200, 0, 0.5);
+                    transform: translateY(-2px);
+                    box-shadow: 0 4px 12px rgba(255, 200, 0, 0.3);
+                }
+
+                span:first-child {
+                    font-size: 14px;
+                    line-height: 1;
+                }
+            }
+        }
+
+        // Actions
+        .user-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: auto;
+
+            .btn {
+                flex: 1;
+                padding: 10px 14px;
+                border-radius: 8px;
+                font-size: 13px;
+                font-weight: 600;
+                text-align: center;
+                cursor: pointer;
+                transition: all 0.2s ease;
+                text-decoration: none;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 5px;
+                border: none;
+
+                &.btn-primary {
+                    background: linear-gradient(135deg, #5865f2 0%, #4752c4 100%);
+                    color: #ffffff;
+                    box-shadow: 0 4px 12px rgba(88, 101, 242, 0.4);
+
+                    &:hover {
+                        background: linear-gradient(135deg, #4752c4 0%, #3c45a5 100%);
+                        transform: translateY(-2px);
+                        box-shadow: 0 6px 20px rgba(88, 101, 242, 0.5);
+                    }
+                }
+
+                &.btn-secondary {
+                    background: rgba(255, 255, 255, 0.08);
+                    color: #dcddde;
+                    border: 1px solid rgba(255, 255, 255, 0.1);
+
+                    &:hover {
+                        background: rgba(255, 255, 255, 0.12);
+                        border-color: rgba(255, 255, 255, 0.2);
+                        transform: translateY(-2px);
+                        color: #ffffff;
+                    }
+                }
+            }
+        }
     }
 
-    // Close button - modern sleek style
+    // Close button
     .user-card-close {
         position: absolute;
         top: 12px;
@@ -68,7 +366,7 @@
         width: 32px;
         height: 32px;
         border-radius: 50%;
-        background: rgba(0, 0, 0, 0.4);
+        background: rgba(0, 0, 0, 0.5);
         backdrop-filter: blur(10px);
         border: none;
         color: #dcddde;
@@ -85,225 +383,6 @@
             background: rgba(220, 38, 38, 0.8);
             transform: rotate(90deg) scale(1.1);
             color: #fff;
-        }
-    }
-
-    // Avatar - elevated and modern
-    .user-card-avatar {
-        width: 100px;
-        height: 100px;
-        margin-top: -50px !important;
-        margin-bottom: 16px;
-        position: relative;
-        border-radius: 50%;
-        background: #2f3136;
-        padding: 5px;
-        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4),
-            0 0 0 4px rgba(88, 101, 242, 0.2);
-
-        img {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-
-        .status-badge {
-            position: absolute;
-            bottom: 4px;
-            right: 4px;
-            width: 24px;
-            height: 24px;
-            background: #43b581;
-            border: 4px solid #2f3136;
-            border-radius: 50%;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-        }
-    }
-
-    // User info section
-    .user-info {
-        text-align: center;
-        margin-bottom: 20px;
-
-        .display-name {
-            color: #ffffff;
-            font-size: 22px;
-            font-weight: 700;
-            margin: 0 0 4px 0;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
-        }
-
-        .username {
-            color: #b9bbbe;
-            font-size: 14px;
-            margin: 0 0 12px 0;
-            font-weight: 400;
-        }
-
-        .title-badge {
-            display: inline-flex;
-            align-items: center;
-            padding: 6px 14px;
-            background: linear-gradient(135deg, #5865f2 0%, #4752c4 100%);
-            color: #ffffff;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            box-shadow: 0 4px 12px rgba(88, 101, 242, 0.3);
-        }
-    }
-
-    // Stats - single posts stat, modern card style
-    .stats-section {
-        margin-bottom: 16px;
-
-        .section-title {
-            font-size: 11px;
-            font-weight: 700;
-            color: #8e9297;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 10px;
-        }
-
-        .stat-box {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 16px;
-            background: linear-gradient(135deg, rgba(88, 101, 242, 0.1) 0%, rgba(88, 101, 242, 0.05) 100%);
-            border-radius: 12px;
-            border: 1px solid rgba(88, 101, 242, 0.2);
-            transition: all 0.2s ease;
-
-            &:hover {
-                background: linear-gradient(135deg, rgba(88, 101, 242, 0.15) 0%, rgba(88, 101, 242, 0.08) 100%);
-                border-color: rgba(88, 101, 242, 0.3);
-                transform: translateY(-2px);
-                box-shadow: 0 4px 12px rgba(88, 101, 242, 0.2);
-            }
-
-            .stat-value {
-                font-size: 28px;
-                font-weight: 700;
-                color: #ffffff;
-                margin-bottom: 4px;
-                text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-            }
-
-            .stat-label {
-                font-size: 11px;
-                color: #b9bbbe;
-                text-transform: uppercase;
-                letter-spacing: 0.5px;
-                font-weight: 600;
-            }
-        }
-    }
-
-    // Badges and Groups - modern chip style
-    .badges-section,
-    .groups-section {
-        margin-bottom: 16px;
-
-        .section-title {
-            font-size: 11px;
-            font-weight: 700;
-            color: #8e9297;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 10px;
-        }
-
-        .badges-list,
-        .groups-list {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        .badge-chip,
-        .group-chip {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 8px 14px;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            font-size: 13px;
-            color: #dcddde;
-            font-weight: 500;
-            text-decoration: none;
-            transition: all 0.2s ease;
-            backdrop-filter: blur(10px);
-
-            &:hover {
-                background: linear-gradient(135deg, rgba(88, 101, 242, 0.3) 0%, rgba(88, 101, 242, 0.2) 100%);
-                border-color: rgba(88, 101, 242, 0.5);
-                transform: translateY(-2px);
-                box-shadow: 0 4px 12px rgba(88, 101, 242, 0.3);
-                color: #ffffff;
-            }
-
-            span:first-child {
-                font-size: 16px;
-                line-height: 1;
-            }
-        }
-    }
-
-    // Actions - modern button style
-    .user-actions {
-        display: flex;
-        gap: 10px;
-        margin-top: 20px;
-        padding-top: 20px;
-        border-top: 1px solid rgba(255, 255, 255, 0.08);
-
-        .btn {
-            flex: 1;
-            padding: 12px 16px;
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: 600;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-            border: none;
-
-            &.btn-primary {
-                background: linear-gradient(135deg, #5865f2 0%, #4752c4 100%);
-                color: #ffffff;
-                box-shadow: 0 4px 12px rgba(88, 101, 242, 0.4);
-
-                &:hover {
-                    background: linear-gradient(135deg, #4752c4 0%, #3c45a5 100%);
-                    transform: translateY(-2px);
-                    box-shadow: 0 6px 20px rgba(88, 101, 242, 0.5);
-                }
-            }
-
-            &.btn-secondary {
-                background: rgba(255, 255, 255, 0.08);
-                color: #dcddde;
-                border: 1px solid rgba(255, 255, 255, 0.1);
-
-                &:hover {
-                    background: rgba(255, 255, 255, 0.12);
-                    border-color: rgba(255, 255, 255, 0.2);
-                    transform: translateY(-2px);
-                    color: #ffffff;
-                }
-            }
         }
     }
 }
