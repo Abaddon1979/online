@@ -56,30 +56,47 @@ $discord-hover: #3c3f45;
   border-radius: 0 !important;
   padding: 8px 16px !important;
   margin: 0 !important;
+  display: flex !important;
+  align-items: flex-start !important;
 
   .chat-message-avatar {
     border-radius: 50%;
+    width: 40px !important;
+    height: 40px !important;
+    margin-right: 16px !important;
+    flex-shrink: 0 !important;
+    margin-top: 2px !important;
+  }
+
+  .chat-message-content {
+    flex: 1 !important;
+    min-width: 0 !important;
   }
 
   .chat-message-info {
     color: $discord-text !important;
+    display: flex !important;
+    align-items: center !important;
+    margin-bottom: 4px !important;
 
     .username {
       color: $discord-text !important;
       font-weight: 600;
       font-family: 'Quicksand', sans-serif;
+      margin-right: 8px !important;
     }
 
     .time {
       color: $discord-text-muted;
       font-size: 0.75rem;
-      margin-left: 8px;
     }
   }
 
   .chat-message-text {
     color: $discord-text !important;
     font-family: 'Quicksand', sans-serif;
+    margin-left: 0 !important;
+    padding-left: 0 !important;
 
     a {
       color: $discord-text-link !important;
