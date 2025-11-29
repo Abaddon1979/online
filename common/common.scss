@@ -92,6 +92,7 @@ $discord-hover: #3c3f45;
     color: $discord-text !important;
     display: flex !important;
     align-items: flex-start !important;  /* align username with top of avatar */
+    flex-wrap: wrap !important;          /* allow reply preview to wrap below */
     margin-bottom: 4px !important;
 
     .username {
@@ -104,6 +105,14 @@ $discord-hover: #3c3f45;
     .time {
       color: $discord-text-muted;
       font-size: 0.75rem;
+    }
+
+    /* Ensure reply preview wraps to a new line under the header row */
+    .chat-reply,
+    .chat-message-reply,
+    .chat-quote {
+      flex-basis: 100% !important;   /* take full width on its own line */
+      margin-top: 2px !important;
     }
   }
 
@@ -478,18 +487,21 @@ body:not(.enable-online-sidebar) {
     position: absolute;
     top: 20px; /* Moved down from -60px to position within card */
     left: 16px;
-    width: 92px;
-    height: 92px;
-    border-radius: 50%;
+    width: 92px !important;
+    height: 92px !important;
+    aspect-ratio: 1 / 1 !important;
+    border-radius: 50% !important;
     border: 6px solid $discord-darker;
     background-color: $discord-darker;
-    overflow: hidden;
+    overflow: hidden !important;
 
     img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      border-radius: 50%;
+      width: 100% !important;
+      height: 100% !important;
+      aspect-ratio: 1 / 1 !important;
+      object-fit: cover !important;
+      border-radius: 50% !important;
+      display: block;
     }
 
     .status-badge {
