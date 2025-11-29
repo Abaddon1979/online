@@ -631,6 +631,7 @@ body:not(.enable-online-sidebar) {
 }
 
 // Override chat surfaces to #19191d
+.chat-messages-scroller,
 .chat-messages-container,
 .c-navbar-container {
   background: #19191d !important;
