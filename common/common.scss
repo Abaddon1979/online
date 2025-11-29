@@ -438,13 +438,13 @@ body:not(.enable-online-sidebar) {
   .user-card-body {
     position: relative;
     padding: 16px;
-    padding-top: 70px;
+    padding-top: 16px; /* Removed the extra top padding that was pushing content down */
     background-color: #19191d; // Match popover background
   }
 
   .user-card-avatar {
     position: absolute;
-    top: -60px;
+    top: 20px; /* Moved down from -60px to position within card */
     left: 16px;
     width: 92px;
     height: 92px;
@@ -469,6 +469,31 @@ body:not(.enable-online-sidebar) {
       background-color: $discord-online;
       border: 4px solid $discord-darker;
       border-radius: 50%;
+    }
+
+    .edit-background-btn {
+      position: absolute;
+      bottom: 4px;
+      left: 4px;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: rgba(88, 101, 242, 0.9);
+      border: 3px solid $discord-darker;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      svg {
+        width: 12px;
+        height: 12px;
+        fill: #ffffff;
+      }
+
+      &:hover {
+        background: rgba(71, 82, 196, 1);
+      }
     }
   }
 
@@ -817,7 +842,7 @@ body:not(.enable-online-sidebar) {
       padding: 4px;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
       margin-top: 20px; /* Added margin to move avatar down within the card */
-      margin-bottom: 15px; /* Added space below avatar */
+      margin-bottom: 0; /* Removed bottom padding to reduce spacing */
 
       img {
         width: 100%;
@@ -865,7 +890,7 @@ body:not(.enable-online-sidebar) {
 
     .user-info {
       .username-display {
-        margin-bottom: 15px; /* Space between usernames and posts box */
+        margin-bottom: 8px; /* Reduced space between usernames and posts box */
         
         .display-name {
           font-size: 17px;
