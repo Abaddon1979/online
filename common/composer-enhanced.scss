@@ -99,3 +99,23 @@ button.send {
     background-color: #3c3f45 !important;
   }
 }
+
+// Ensure reply preview is above the composer input, not inline to the right
+.chat-composer-main {
+  display: flex !important;
+  flex-direction: column !important;  // stack reply details above input
+  align-items: stretch !important;
+}
+
+.chat-composer-message-details {
+  display: flex !important;
+  align-items: center !important;
+  width: 100% !important;
+  margin-bottom: 6px !important;
+}
+
+.chat-composer-message-details .chat-reply {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
