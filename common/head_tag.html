@@ -46,10 +46,135 @@ api.onPageChange(() => {
   document.body.classList.add("enable-online-sidebar");
 
   function showUserCard(username, event) {
-    // User card is now handled by user-card-functions.html
-    if (window.showUserCard) {
-      window.showUserCard(username, event);
+    document.querySelectorAll('.discord-user-card-backdrop, .discord-user-card').forEach(el => el.remove());
+    
+    const backdrop = document.createElement('div');
+    backdrop.className = 'discord-user-card-backdrop';
+    backdrop.onclick = () => document.querySelectorAll('.discord-user-card-backdrop, .discord-user-card').forEach(el => el.remove());
+    
+    const card = document.createElement('div');
+    card.className = 'discord-user-card';
+    
+    const clickX = (event && typeof event.clientX === "number") ? event.clientX : window.innerWidth / 2;
+    const clickY = (event && typeof event.clientY === "number") ? event.clientY : window.innerHeight / 2;
+    const cardWidth = 700;
+    const cardHeight = 320;
+    
+    let left = clickX + 10;
+    if (left + cardWidth > window.innerWidth) left = clickX - cardWidth - 10;
+    
+    let top = clickY + 10;
+    if (top + cardHeight > window.innerHeight) top = Math.max(10, clickY - cardHeight - 10);
+    
+    card.style.left = left + 'px';
+    card.style.top = top + 'px';
+    card.style.position = 'fixed';
+    
+    card.innerHTML = '<button class="user-card-close" type="button">×</button><div class="user-card-left"><div class="user-card-loading"><div class="spinner"></div><span>Loading...</span></div></div><div class="user-card-right"></div>';
+    
+    document.body.appendChild(backdrop);
+    document.body.appendChild(card);
+    
+    const closeBtn = card.querySelector('.user-card-close');
+    if (closeBtn) {
+      closeBtn.onclick = function(e) {
+        if (e && typeof e.stopPropagation === "function") e.stopPropagation();
+        document.querySelectorAll('.discord-user-card-backdrop, .discord-user-card').forEach(el => el.remove());
+      };
     }
+    
+    ajax("/u/" + username + ".json").then(data => {
+      const user = data.user;
+      const avatar = (user.avatar_template.startsWith('/') ? window.location.origin : '') + user.avatar_template.replace('{size}', '256');
+      
+      const leftSection = card.querySelector('.user-card-left');
+      const rightSection = card.querySelector('.user-card-right');
+      if (!leftSection || !rightSection) return;
+      
+      const savedBg = localStorage.getItem('user_card_bg_' + username);
+      if (savedBg) {
+        card.style.setProperty('--user-card-bg', 'url(' + savedBg + ')');
+        card.setAttribute('data-bg-url', savedBg);
+      }
+      
+      const rolesHTML = user.groups && user.groups.length > 0 ? '<div class="roles-section"><div class="section-title">Roles</div><div class="roles-list">' + user.groups.slice(0, 8).map(g => '<a href="/g/' + g.name + '" class="role-chip">' + (g.display_name || g.name) + '</a>').join('') + '</div></div>' : '';
+      
+      const badgesHTML = user.featured_user_badge_ids && user.featured_user_badge_ids.length > 0 ? '<div class="badges-section"><div class="section-title">Badges</div><div class="badges-list">' + user.featured_user_badge_ids.slice(0, 6).map(() => '<div class="badge-chip"><span>🏅</span><span>Badge</span></div>').join('') + '</div></div>' : '';
+      
+      const editIconSVG = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>';
+      
+      leftSection.innerHTML = '<div class="user-card-avatar"><img src="' + avatar + '"><div class="status-badge"></div><button class="edit-background-btn" title="Change Background">' + editIconSVG + '</button></div><div class="user-info"><h2 class="display-name">' + (user.name || user.username) + '</h2><p class="username">@' + user.username + '</p>' + (user.title ? '<span class="title-badge">' + user.title + '</span>' : '') + '</div><div class="posts-stat"><span class="stat-value">' + (user.post_count || 0) + '</span><span class="stat-label">Posts</span></div>';
+      
+      rightSection.innerHTML = '<div class="status-box"><div class="status-label">Status</div><div class="status-text"><span class="status-indicator"></span><span>Online</span></div></div>' + rolesHTML + badgesHTML + '<div class="user-actions"><a href="/new-message?username=' + user.username + '&type=chat" class="btn btn-primary">💬 Chat</a><a href="/new-message?username=' + user.username + '" class="btn btn-secondary">✉️ Message</a><a href="/u/' + user.username + '" class="btn btn-secondary">👤 Profile</a></div>';
+      
+      const editBtn = card.querySelector('.edit-background-btn');
+      if (editBtn) {
+        editBtn.onclick = function(e) {
+          e.stopPropagation();
+          openTenorPicker(username, card);
+        };
+      }
+      
+      if (closeBtn) {
+        closeBtn.onclick = function(e) {
+          if (e && typeof e.stopPropagation === "function") e.stopPropagation();
+          document.querySelectorAll('.discord-user-card-backdrop, .discord-user-card').forEach(el => el.remove());
+        };
+      }
+    });
+  }
+
+  function openTenorPicker(username, cardElement) {
+    const modal = document.createElement('div');
+    modal.className = 'tenor-picker-modal';
+    modal.innerHTML = '<div class="tenor-header"><h3>Select Animated Background</h3><button class="tenor-close">×</button></div><div class="tenor-search"><input type="text" placeholder="Search for GIFs..." class="tenor-search-input"></div><div class="tenor-results"></div>';
+    
+    document.body.appendChild(modal);
+    
+    const closeBtn = modal.querySelector('.tenor-close');
+    const searchInput = modal.querySelector('.tenor-search-input');
+    const resultsDiv = modal.querySelector('.tenor-results');
+    
+    closeBtn.onclick = () => modal.remove();
+    
+    const TENOR_API_KEY = 'AIzaSyAyimkuYQYF_FXVALexPuGQctUWRURdCYQ';
+    
+    function searchTenor(query) {
+      const searchQuery = query || 'anime aesthetic';
+      const limit = 30;
+      const url = `https://tenor.googleapis.com/v2/search?q=${encodeURIComponent(searchQuery)}&key=${TENOR_API_KEY}&limit=${limit}&media_filter=gif,webp`;
+      
+      fetch(url).then(response => response.json()).then(data => {
+        resultsDiv.innerHTML = '';
+        if (data.results) {
+          data.results.forEach(gif => {
+            const img = document.createElement('img');
+            img.src = gif.media_formats.tinygif?.url || gif.media_formats.gif.url;
+            const fullUrl = gif.media_formats.webp?.url || gif.media_formats.gif?.url;
+            img.dataset.fullUrl = fullUrl;
+            img.onclick = () => {
+              const bgUrl = img.dataset.fullUrl;
+              cardElement.style.setProperty('--user-card-bg', 'url(' + bgUrl + ')');
+              cardElement.setAttribute('data-bg-url', bgUrl);
+              localStorage.setItem('user_card_bg_' + username, bgUrl);
+              modal.remove();
+            };
+            resultsDiv.appendChild(img);
+          });
+        }
+      }).catch(err => {
+        console.error('Tenor search error:', err);
+        resultsDiv.innerHTML = '<p style="color:#dcddde;text-align:center;padding:20px;">Failed to load GIFs.</p>';
+      });
+    }
+    
+    searchTenor('');
+    
+    let searchTimeout;
+    searchInput.addEventListener('input', (e) => {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => searchTenor(e.target.value), 500);
+    });
   }
 
   function updateOnlineStatus() {
@@ -67,10 +192,9 @@ api.onPageChange(() => {
     sidebar.innerHTML = '<div class="discord-sidebar-header" style="padding:16px;border-bottom:1px solid #202225;"><h3 style="color:#8e9297;font-size:12px;font-weight:600;margin:0;">Users — <span class="online-count">0</span></h3></div><div class="discord-sidebar-users loading" style="padding:8px;"></div>';
     document.body.appendChild(sidebar);
 
-    // Fetch online users from sideonline.json - this is the only source
     ajax("/sideonline.json").then(data => {
       const allUsers = data.users || [];
-      console.log('[Discord Chat] Loaded ' + allUsers.length + ' online users from sideonline.json');
+      console.log('[Discord Chat] Loaded ' + allUsers.length + ' online users');
       
       onlineUsernames = new Set(allUsers.map(u => u.username));
       
@@ -79,21 +203,12 @@ api.onPageChange(() => {
       if (!container) return;
       container.classList.remove('loading');
       
-      // Categorize users - all are online
-      const admins = [];
-      const moderators = [];
-      const onlineTL4 = [];
-      const onlineTL3 = [];
-      const onlineTL2 = [];
-      const onlineTL1 = [];
-      const onlineTL0 = [];
+      const admins = [], moderators = [], onlineTL4 = [], onlineTL3 = [], onlineTL2 = [], onlineTL1 = [], onlineTL0 = [];
       
       allUsers.forEach(user => {
-        if (user.admin) {
-          admins.push(user);
-        } else if (user.moderator) {
-          moderators.push(user);
-        } else {
+        if (user.admin) admins.push(user);
+        else if (user.moderator) moderators.push(user);
+        else {
           const tl = user.trust_level || 0;
           if (tl === 4) onlineTL4.push(user);
           else if (tl === 3) onlineTL3.push(user);
@@ -103,25 +218,20 @@ api.onPageChange(() => {
         }
       });
       
-      console.log('[Discord Chat] Categorized: Admins=' + admins.length + ', Mods=' + moderators.length + ', TL4=' + onlineTL4.length + ', TL3=' + onlineTL3.length + ', TL2=' + onlineTL2.length + ', TL1=' + onlineTL1.length + ', TL0=' + onlineTL0.length);
-      
       let html = '';
       
-      // Admins - only if online
       if (admins.length > 0) {
         html += '<div class="role-group"><div class="role-header" style="color:#e74c3c;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;padding:12px 8px 4px 8px;">Administrators — ' + admins.length + '</div>';
         admins.forEach(u => html += renderUser(u));
         html += '</div>';
       }
       
-      // Moderators - only if online
       if (moderators.length > 0) {
         html += '<div class="role-group"><div class="role-header" style="color:#f39c12;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;padding:12px 8px 4px 8px;">Moderators — ' + moderators.length + '</div>';
         moderators.forEach(u => html += renderUser(u));
         html += '</div>';
       }
       
-      // Trust levels - only online users
       if (onlineTL4.length > 0) {
         html += '<div class="role-group"><div class="role-header" style="color:#9b59b6;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;padding:12px 8px 4px 8px;">Trust Level 4 — ' + onlineTL4.length + '</div>';
         onlineTL4.forEach(u => html += renderUser(u));
@@ -161,13 +271,13 @@ api.onPageChange(() => {
       
       count.textContent = allUsers.length;
     }).catch(err => {
-      console.error('[Discord Chat] Failed to load users from sideonline.json:', err);
+      console.error('[Discord Chat] Failed to load users:', err);
     });
   }
 
   function renderUser(user) {
     const avatar = (user.avatar_template.startsWith('/') ? window.location.origin : '') + user.avatar_template.replace('{size}', '96');
-    const statusColor = '#43b581'; // Green - all users shown are online
+    const statusColor = '#43b581';
     
     return '<div class="discord-user-item online" data-username="' + user.username + '" style="display:flex;align-items:center;padding:8px;margin:2px 0;border-radius:4px;cursor:pointer;"><div style="width:32px;height:32px;margin-right:12px;position:relative;"><img src="' + avatar + '" style="width:100%;height:100%;border-radius:50%;"><div class="status-dot" style="position:absolute;bottom:-2px;right:-2px;width:12px;height:12px;background:' + statusColor + ';border:3px solid #2f3136;border-radius:50%;"></div></div><div style="flex:1;"><div style="color:#dcddde;font-size:14px;font-weight:500;">' + user.username + '</div></div></div>';
   }
