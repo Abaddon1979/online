@@ -648,23 +648,50 @@ button.send {
   }
 }
 
-// Toolbar buttons (emoji, upload, etc.)
+// Toolbar buttons (emoji, upload, etc.) - Discord-style icon chips
 .chat-emoji-picker-btn,
 .emoji-picker-btn,
 .chat-upload-btn,
 .upload-btn,
 .chat-composer-inline-buttons button {
-  color: #8e9297 !important;
   background: transparent !important;
   border: none !important;
-  padding: 8px !important;
-  border-radius: 4px !important;
-  transition: all 0.15s ease !important;
+  padding: 4px !important;
+  margin: 0 4px !important;
+  border-radius: 999px !important; // pill / round
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  color: #b9bbbe !important;
+  transition: background-color 0.15s ease, color 0.15s ease, transform 0.1s ease !important;
+
+  .d-icon {
+    color: inherit !important;
+    width: 18px;
+    height: 18px;
+  }
+
+  // Hide any text label next to the icon so it feels like Discord
+  span {
+    display: none;
+  }
 
   &:hover {
-    color: #dcddde !important;
     background-color: #3c3f45 !important;
+    color: #ffffff !important;
+    transform: translateY(-1px);
   }
+
+  &:active {
+    transform: translateY(0);
+  }
+}
+
+// Align inline composer buttons horizontally
+.chat-composer-inline-buttons {
+  display: flex;
+  align-items: center;
+  gap: 2px;
 }
 
 // Hide online users sidebar on mobile/tablet
