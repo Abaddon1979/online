@@ -806,7 +806,7 @@ body:not(.enable-online-sidebar) {
     gap: 8px;
     z-index: 1;
     width: 200px;
-    padding-top: 25px;
+    padding-top: 0px; /* Removed top padding to move avatar down */
 
     .user-card-avatar {
       width: 90px;
@@ -816,6 +816,7 @@ body:not(.enable-online-sidebar) {
       background: #2f3136;
       padding: 4px;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+      margin-top: 20px; /* Added margin to move avatar down within the card */
 
       img {
         width: 100%;
@@ -879,6 +880,7 @@ body:not(.enable-online-sidebar) {
         padding: 12px 14px;
         width: 170px;
         margin-left: -15px;
+        margin-top: 10px; /* Added margin to create space between usernames and posts box */
 
         .stat-value {
           font-size: 26px;
