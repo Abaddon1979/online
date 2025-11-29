@@ -863,21 +863,25 @@ body:not(.enable-online-sidebar) {
     padding-top: 0px; /* Removed top padding to move avatar down */
 
     .user-card-avatar {
-      width: 90px;
-      height: 90px;
+      width: 90px !important;
+      height: 90px !important;
+      aspect-ratio: 1 / 1 !important;
       position: relative;
-      border-radius: 50%;
+      border-radius: 50% !important;
       background: #2f3136;
       padding: 4px;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-      margin-top: 20px; /* Added margin to move avatar down within the card */
-      margin-bottom: 0; /* Removed bottom padding to reduce spacing */
+      margin-top: 0 !important; /* moved up ~20px from previous 20px */
+      margin-bottom: 10px !important;
+      overflow: hidden !important;
 
       img {
-        width: 100%;
-        height: 100%;
-        border-radius: 50%;
-        object-fit: cover;
+        width: 100% !important;
+        height: 100% !important;
+        aspect-ratio: 1 / 1 !important;
+        border-radius: 50% !important;
+        object-fit: cover !important;
+        display: block;
       }
 
       .status-badge {
