@@ -205,7 +205,7 @@ api.onPageChange(() => {
     const sidebar = document.createElement('div');
     sidebar.id = 'discord-online-users-sidebar';
     sidebar.className = 'discord-sidebar';
-    sidebar.style.cssText = 'position:fixed!important;top:60px!important;right:0!important;width:' + sidebarWidth + 'px!important;height:calc(100vh - 60px)!important;background:#2f3136!important;border-left:1px solid #202225!important;z-index:999!important;overflow-y:auto!important;display:block!important;';
+    sidebar.style.cssText = 'position:fixed!important;top:60px!important;right:0!important;width:' + sidebarWidth + 'px!important;height:calc(100vh - 60px)!important;background:#19191d!important;border-left:1px solid #202225!important;z-index:999!important;overflow-y:auto!important;display:block!important;';
     sidebar.innerHTML = '<div class="discord-sidebar-header" style="padding:16px;border-bottom:1px solid #202225;"><h3 style="color:#8e9297;font-size:12px;font-weight:600;margin:0;">Users — <span class="online-count">0</span></h3></div><div class="discord-sidebar-users loading" style="padding:8px;"></div>';
     document.body.appendChild(sidebar);
 
@@ -311,7 +311,7 @@ api.onPageChange(() => {
     const avatar = (user.avatar_template.startsWith('/') ? window.location.origin : '') + user.avatar_template.replace('{size}', '96');
     const statusColor = '#43b581'; // Green - all users shown are online
     
-    return '<div class="discord-user-item online" data-username="' + user.username + '" style="display:flex;align-items:center;padding:8px;margin:2px 0;border-radius:4px;cursor:pointer;"><div style="width:32px;height:32px;margin-right:12px;position:relative;"><img src="' + avatar + '" style="width:100%;height:100%;border-radius:50%;"><div class="status-dot" style="position:absolute;bottom:-2px;right:-2px;width:12px;height:12px;background:' + statusColor + ';border:3px solid #2f3136;border-radius:50%;"></div></div><div style="flex:1;"><div style="color:#dcddde;font-size:14px;font-weight:500;">' + user.username + '</div></div></div>';
+    return '<div class="discord-user-item online" data-username="' + user.username + '" style="display:flex;align-items:center;padding:8px;margin:2px 0;border-radius:4px;cursor:pointer;"><div style="width:32px;height:32px;margin-right:12px;position:relative;"><img src="' + avatar + '" style="width:100%;height:100%;border-radius:50%;"><div class="status-dot" style="position:absolute;bottom:-2px;right:-2px;width:12px;height:12px;background:' + statusColor + ';border:3px solid #19191d;border-radius:50%;"></div></div><div style="flex:1;"><div style="color:#dcddde;font-size:14px;font-weight:500;">' + user.username + '</div></div></div>';
   }
 
   createSidebar();
