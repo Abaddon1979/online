@@ -54,7 +54,7 @@ $discord-hover: #3c3f45;
   background-color: transparent !important;
   color: $discord-text !important;
   border-radius: 0 !important;
-  padding: 8px 16px !important;
+  padding: 8px 12px !important; /* move avatar + text 4px left */
   margin: 0 !important;
   display: flex !important;
   align-items: flex-start !important;
