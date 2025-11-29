@@ -415,7 +415,7 @@ body:not(.enable-online-sidebar) {
   position: fixed;
   width: 340px;
   background-color: #19191d; // Dark popover background
-  border-radius: 8px;
+  border-radius: 4px; // more square, sleek
   box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
   z-index: 10000;
   font-family: 'Quicksand', sans-serif;
@@ -615,6 +615,92 @@ body:not(.enable-online-sidebar) {
       background-color: rgba(0, 0, 0, 0.5);
       color: $discord-text;
     }
+  }
+
+  // Sleek stats layout: show only posts in a single modern box
+  .user-card-stats {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .user-card-stats .stat-item:nth-child(n + 2) {
+    display: none;
+  }
+
+  .user-card-stats .stat-item {
+    background-color: #111216;
+    border-radius: 8px;
+    padding: 10px 12px;
+    text-align: center;
+    border: 1px solid $discord-darkest;
+  }
+
+  .user-card-stats .stat-value {
+    font-size: 16px;
+    font-weight: 700;
+  }
+
+  .user-card-stats .stat-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: $discord-text-muted;
+  }
+
+  // Badge chips
+  .badges-section .badges-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .badges-section .badge-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background-color: #111216;
+    border: 1px solid $discord-darkest;
+    font-size: 12px;
+    color: $discord-text;
+  }
+
+  // Chat / message / profile action boxes
+  .user-card-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+  }
+
+  .user-card-actions .btn,
+  .user-card-actions .action-btn {
+    flex: 1;
+    text-align: center;
+    border-radius: 8px;
+    border: 1px solid $discord-darkest;
+    background-color: #111216;
+    color: $discord-text;
+    padding: 8px 10px;
+    font-weight: 600;
+    font-size: 13px;
+    text-decoration: none;
+    transition: background-color 0.15s ease, transform 0.1s ease;
+  }
+
+  .user-card-actions .btn-primary,
+  .user-card-actions .action-btn.primary {
+    background-color: $discord-blurple;
+    border-color: $discord-blurple;
+    color: #fff;
+  }
+
+  .user-card-actions .btn:hover,
+  .user-card-actions .action-btn:hover {
+    transform: translateY(-1px);
+    background-color: $discord-dark;
   }
 }
 
