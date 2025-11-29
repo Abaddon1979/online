@@ -795,122 +795,233 @@ body:not(.enable-online-sidebar) {
     z-index: 1000;
 
     &:hover {
-      margin-bottom: 6px;
-    }
-
-    .roles-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 4px;
-    }
-
-    .role-chip {
-      display: inline-block;
-      padding: 4px 8px;
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: 12px;
-      font-size: 11px;
-      color: #dcddde;
-      font-weight: 600;
-      text-decoration: none;
-
-      &:hover {
-        background: rgba(88, 101, 242, 0.3);
-        border-color: rgba(88, 101, 242, 0.5);
-      }
-    }
-
-    .badge-count {
-      font-size: 11px;
-      color: #b9bbbe;
-      margin-top: 4px;
-    }
-  }
-}
-
-.user-card-right {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  z-index: 1;
-
-  .status-box {
-    flex: 1;
-    padding: 12px;
-    background: rgba(0, 0, 0, 0.2);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
-
-    .status-label {
-      font-size: 10px;
-      color: #8e9297;
-      text-transform: uppercase;
-      font-weight: 700;
-      margin-bottom: 6px;
-    }
-
-    textarea {
-      width: 100%;
-      height: 100px;
-      background: transparent;
-      border: none;
-      color: #dcddde;
-      font-size: 13px;
-      resize: none;
-      font-family: 'Quicksand', sans-serif;
-
-      &::placeholder {
-        color: #72767d;
-      }
-
-      &:focus {
-        outline: none;
-      }
+      background: rgba(220, 38, 38, 0.8);
+      color: #fff;
     }
   }
 
-  .user-actions {
+  .user-card-left {
     display: flex;
+    flex-direction: column;
     gap: 8px;
+    z-index: 1;
+    width: 200px;
+    padding-top: 10px;
 
-    .btn {
-      flex: 1;
-      padding: 10px;
-      border-radius: 6px;
-      font-size: 13px;
-      font-weight: 600;
-      text-align: center;
-      cursor: pointer;
-      text-decoration: none;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 4px;
+    .user-card-avatar {
+      width: 90px;
+      height: 90px;
+      position: relative;
+      border-radius: 50%;
+      background: #2f3136;
+      padding: 4px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 
-      &.btn-primary {
-        background: linear-gradient(135deg, #5865f2 0%, #4752c4 100%);
-        color: #ffffff;
+      img {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        object-fit: cover;
+      }
+
+      .status-badge {
+        position: absolute;
+        bottom: 0px;
+        right: 0px;
+        width: 22px;
+        height: 22px;
+        background: #43b581;
+        border: 4px solid #2f3136;
+        border-radius: 50%;
+      }
+
+      .edit-background-btn {
+        position: absolute;
+        bottom: 0px;
+        left: 0px;
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        background: rgba(88, 101, 242, 0.9);
+        border: 3px solid #2f3136;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        svg {
+          width: 12px;
+          height: 12px;
+          fill: #ffffff;
+        }
 
         &:hover {
-          background: linear-gradient(135deg, #4752c4 0%, #3c45a5 100%);
+          background: rgba(71, 82, 196, 1);
+        }
+      }
+    }
+
+    .user-info {
+      .display-name {
+        color: #ffffff;
+        font-size: 18px;
+        font-weight: 700;
+        margin: 0;
+        line-height: 1.2;
+      }
+
+      .username {
+        color: #b9bbbe;
+        font-size: 12px;
+        margin: 2px 0 8px 0;
+        display: block;
+      }
+
+      .posts-stat {
+        padding: 8px 10px;
+        background: rgba(88, 101, 242, 0.1);
+        border: 1px solid rgba(88, 101, 242, 0.3);
+        border-radius: 8px;
+        text-align: center;
+        max-width: 140px;
+
+        .stat-value {
+          font-size: 20px;
+          font-weight: 700;
+          color: #ffffff;
+          display: block;
+        }
+
+        .stat-label {
+          font-size: 10px;
+          color: #b9bbbe;
+          text-transform: uppercase;
+        }
+      }
+    }
+
+    .roles-section {
+      .section-title {
+        font-size: 10px;
+        font-weight: 700;
+        color: #8e9297;
+        text-transform: uppercase;
+        margin-bottom: 6px;
+      }
+
+      .roles-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+      }
+
+      .role-chip {
+        display: inline-block;
+        padding: 4px 8px;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: 12px;
+        font-size: 11px;
+        color: #dcddde;
+        font-weight: 600;
+        text-decoration: none;
+
+        &:hover {
+          background: rgba(88, 101, 242, 0.3);
+          border-color: rgba(88, 101, 242, 0.5);
         }
       }
 
-      &.btn-secondary {
-        background: rgba(255, 255, 255, 0.08);
-        color: #dcddde;
-        border: 1px solid rgba(255, 255, 255, 0.1);
+      .badge-count {
+        font-size: 11px;
+        color: #b9bbbe;
+        margin-top: 4px;
+      }
+    }
+  }
 
-        &:hover {
-          background: rgba(255, 255, 255, 0.12);
+  .user-card-right {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    z-index: 1;
+
+    .status-box {
+      flex: 1;
+      padding: 12px;
+      background: rgba(0, 0, 0, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+
+      .status-label {
+        font-size: 10px;
+        color: #8e9297;
+        text-transform: uppercase;
+        font-weight: 700;
+        margin-bottom: 6px;
+      }
+
+      textarea {
+        width: 100%;
+        height: 100px;
+        background: transparent;
+        border: none;
+        color: #dcddde;
+        font-size: 13px;
+        resize: none;
+        font-family: 'Quicksand', sans-serif;
+
+        &::placeholder {
+          color: #72767d;
+        }
+
+        &:focus {
+          outline: none;
+        }
+      }
+    }
+
+    .user-actions {
+      display: flex;
+      gap: 8px;
+
+      .btn {
+        flex: 1;
+        padding: 10px;
+        border-radius: 6px;
+        font-size: 13px;
+        font-weight: 600;
+        text-align: center;
+        cursor: pointer;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+
+        &.btn-primary {
+          background: linear-gradient(135deg, #5865f2 0%, #4752c4 100%);
           color: #ffffff;
+
+          &:hover {
+            background: linear-gradient(135deg, #4752c4 0%, #3c45a5 100%);
+          }
+        }
+
+        &.btn-secondary {
+          background: rgba(255, 255, 255, 0.08);
+          color: #dcddde;
+          border: 1px solid rgba(255, 255, 255, 0.1);
+
+          &:hover {
+            background: rgba(255, 255, 255, 0.12);
+            color: #ffffff;
+          }
         }
       }
     }
   }
-}
 }
 
 .discord-user-card-backdrop {
