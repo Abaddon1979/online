@@ -1,0 +1,28 @@
+enable_online_sidebar:
+  type: bool
+  default: true
+  description: "Show the online users sidebar on the right side of chat"
+
+sidebar_width:
+  type: integer
+  default: 240
+  min: 180
+  max: 400
+  description: "Width of the online users sidebar in pixels"
+
+user_refresh_interval:
+  type: integer
+  default: 30000
+  min: 10000
+  max: 120000
+  description: "How often to refresh the online users list (in milliseconds)"
+
+enable_discord_colors:
+  type: bool
+  default: true
+  description: "Apply Discord color scheme to chat"
+
+enable_quicksand_font:
+  type: bool
+  default: true
+  description: "Use Quicksand font for chat messages"

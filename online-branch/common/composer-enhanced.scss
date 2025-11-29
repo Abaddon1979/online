@@ -1,0 +1,93 @@
+// Enhanced Message Bar (Composer) Styling
+
+.chat-composer-container {
+  background-color: #2f3136 !important;
+  border-top: none !important;
+  padding: 16px 20px !important;
+  box-shadow: 0 -1px 0 rgba(0, 0, 0, 0.2) !important;
+}
+
+.chat-composer,
+.chat-composer-input,
+textarea.chat-composer {
+  background-color: #3c3f45 !important;
+  border: none !important;
+  border-radius: 8px !important;
+  padding: 12px 16px !important;
+  color: #dcddde !important;
+  font-size: 15px !important;
+  line-height: 1.5 !important;
+  transition: background-color 0.15s ease !important;
+  box-shadow: none !important;
+  min-height: 44px !important;
+  font-family: 'Quicksand', sans-serif !important;
+  
+  &::placeholder {
+    color: #8e9297 !important;
+    opacity: 1 !important;
+  }
+  
+  &:focus {
+    background-color: #40444b !important;
+    outline: none !important;
+    box-shadow: none !important;
+  }
+  
+  &:hover:not(:focus) {
+    background-color: #3e4147 !important;
+  }
+}
+
+// Send button
+.chat-composer-button,
+.send-btn,
+.chat-send-btn,
+button.send {
+  background-color: #5865f2 !important;
+  border: none !important;
+  border-radius: 6px !important;
+  padding: 10px 18px !important;
+  color: white !important;
+  font-family: 'Quicksand', sans-serif !important;
+  font-weight: 600 !important;
+  font-size: 14px !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+  box-shadow: none !important;
+  
+  &:hover:not(:disabled) {
+    background-color: #4752c4 !important;
+    transform: translateY(-1px) !important;
+  }
+  
+  &:active {
+    transform: translateY(0) !important;
+  }
+  
+  &:disabled {
+    background-color: #202225 !important;
+    color: #8e9297 !important;
+    cursor: not-allowed !important;
+    transform: none !important;
+    opacity: 0.5 !important;
+  }
+}
+
+// Toolbar buttons (emoji, upload, etc.)
+.chat-emoji-picker-btn,
+.emoji-picker-btn,
+.chat-upload-btn,
+.upload-btn,
+.chat-composer-inline-buttons button {
+  color: #8e9297 !important;
+  background: transparent !important;
+  border: none !important;
+  padding: 8px !important;
+  border-radius: 4px !important;
+  transition: all 0.15s ease !important;
+  
+  &:hover {
+    color: #dcddde !important;
+    background-color: #3c3f45 !important;
+  }
+}
