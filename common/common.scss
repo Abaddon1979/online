@@ -93,9 +93,14 @@ $discord-hover: #3c3f45;
 }
 
 // Discord-style Message Composer (from example)
-.chat-composer-container,
-.chat-composer {
+.chat-composer-container {
     background: #40444b !important;
+    border-top: none !important;
+    padding: 16px !important;
+}
+
+.chat-composer {
+    background: #19191d !important;
     border-top: none !important;
     padding: 16px !important;
 }
@@ -204,14 +209,14 @@ $discord-hover: #3c3f45;
   }
 }
 
-// Online Users Sidebar
+ // Online Users Sidebar
 .discord-sidebar {
   position: fixed;
   top: 60px;
   right: 0;
   width: var(--sidebar-width, 240px);
   height: calc(100vh - 60px);
-  background-color: $discord-darker;
+  background-color: #19191d;
   border-left: 1px solid $discord-darkest;
   overflow-y: auto;
   z-index: 999;
@@ -623,6 +628,12 @@ body:not(.enable-online-sidebar) {
   to {
     opacity: 1;
   }
+}
+
+// Override chat surfaces to #19191d
+.chat-messages-container,
+.c-navbar-container {
+  background: #19191d !important;
 }
 
 // Hide online users sidebar on mobile/tablet
