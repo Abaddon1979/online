@@ -1,3 +1,14 @@
+// Import Quicksand font from Google Fonts
+@import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap');
+
+// Import additional styles
+@import "composer-enhanced";
+@import "mobile-hide-sidebar";
+
+// Discord Color Palette
+$discord-dark: #36393f;
+$discord-darker: #2f3136;
+$discord-darkest: #202225;
 $discord-blurple: #5865f2;
 $discord-text: #dcddde;
 $discord-text-muted: #8e9297;
@@ -585,5 +596,9 @@ body:not(.enable-online-sidebar) {
 }
 
 .c-navbar-container {
+  background-color: #2f3136 !important;
+}
+
+.chat-messages-container {
   background-color: #2f3136 !important;
 }
