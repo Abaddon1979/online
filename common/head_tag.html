@@ -80,14 +80,18 @@ api.onPageChange(() => {
       const savedStatus = localStorage.getItem('user_status_' + username) || '';
       const isOwnProfile = user.username === (window.currentUser?.username || '');
       
-      leftSection.innerHTML = '<div class="user-card-avatar"><img src="' + avatar + '"><div class="status-badge"></div><button class="edit-background-btn" title="Change Background">' + editIconSVG + '</button></div><div class="user-info"><h2 class="display-name">' + (user.name || user.username) + '</h2><p class="username">@' + user.username + '</p><div class="posts-stat"><span class="stat-value">' + (user.post_count || 0) + '</span><span class="stat-label">Posts</span></div></div>' + rolesHTML;
+      // Only show edit button if viewing own profile
+      const editButtonHTML = isOwnProfile ? '<button class="edit-background-btn" title="Change Background">' + editIconSVG + '</button>' : '';
+      
+      leftSection.innerHTML = '<div class="user-card-avatar"><img src="' + avatar + '"><div class="status-badge"></div>' + editButtonHTML + '</div><div class="user-info"><h2 class="display-name">' + (user.name || user.username) + '</h2><p class="username">@' + user.username + '</p><div class="posts-stat"><span class="stat-value">' + (user.post_count || 0) + '</span><span class="stat-label">Posts</span></div></div>' + rolesHTML;
       
       rightSection.innerHTML = '<div class="status-box"><div class="status-label">Status</div><textarea placeholder="' + (isOwnProfile ? 'Set your status...' : 'User status...') + '" ' + (isOwnProfile ? '' : 'readonly') + '>' + savedStatus + '</textarea></div><div class="user-actions"><a href="/new-message?username=' + user.username + '&type=chat" class="btn btn-primary">💬 Chat</a><a href="/new-message?username=' + user.username + '" class="btn btn-secondary">✉️ Message</a><a href="/u/' + user.username + '" class="btn btn-secondary">👤 Profile</a></div>';
       
-      const editBtn = card.querySelector('.edit-background-btn');
-      if (editBtn) editBtn.onclick = (e) => { e.stopPropagation(); openTenorPicker(username, card); };
-      
+      // Only wire up edit button and status if it's own profile
       if (isOwnProfile) {
+        const editBtn = card.querySelector('.edit-background-btn');
+        if (editBtn) editBtn.onclick = (e) => { e.stopPropagation(); openTenorPicker(username, card); };
+        
         const statusTextarea = card.querySelector('.status-box textarea');
         if (statusTextarea) statusTextarea.addEventListener('input', function() { localStorage.setItem('user_status_' + username, this.value); });
       }
@@ -97,7 +101,7 @@ api.onPageChange(() => {
   }
 
   function openTenorPicker(username, cardElement) {
-    const modal = document.createElement('div');
+    const modal = document.createElement(' div');
     modal.className = 'tenor-picker-modal';
     modal.innerHTML = '<div class="tenor-header"><h3>Select Animated Background</h3><button class="tenor-close">×</button></div><div class="tenor-search"><input type="text" placeholder="Search for GIFs..." class="tenor-search-input"></div><div class="tenor-results"></div>';
     document.body.appendChild(modal);
@@ -154,7 +158,7 @@ api.onPageChange(() => {
       if (!container) return;
       container.classList.remove('loading');
       
-      const admins = [], moderators = [], onlineTL4 = [], onlineTL3 = [], onlineTL2 = [], onlineTL1 = [], onlineTL0 = [];
+      const admins = [], moderators = [], onlineTL4[] = [], onlineTL3 = [], onlineTL2 = [], onlineTL1 = [], onlineTL0 = [];
       allUsers.forEach(user => {
         if (user.admin) admins.push(user);
         else if (user.moderator) moderators.push(user);
@@ -186,7 +190,7 @@ api.onPageChange(() => {
       }
       if (onlineTL3.length > 0) {
         html += '<div class="role-group"><div class="role-header" style="color:#1abc9c;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;padding:12px 8px 4px 8px;">Trust Level 3 — ' + onlineTL3.length + '</div>';
-        onlineTL3.forEach(u => html += renderUser(u));
+        onlineTL3.forEach(u => html +=renderUser(u));
         html += '</div>';
       }
       if (onlineTL2.length > 0) {
@@ -200,7 +204,7 @@ api.onPageChange(() => {
         html += '</div>';
       }
       if (onlineTL0.length > 0) {
-        html += '<div class="role-group"><div class="role-header" style="color:#5f6c6d;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.5px;padding:12px 8px 4px 8px;">Trust Level 0 — ' + onlineTL0.length + '</div>';
+        html += '<div class="role-group"><div class="role-header" style="color:#5f6c6d;font-size:11px;font-weight:700;text-transform:uppercase;letter-sizing:0.5px;padding:12px 8px 4px 8px;">Trust Level 0 — ' + onlineTL0.length + '</div>';
         onlineTL0.forEach(u => html += renderUser(u));
         html += '</div>';
       }

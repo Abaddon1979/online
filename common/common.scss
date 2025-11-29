@@ -1,4 +1,4 @@
-// Import Quicksand font from Google Fonts
+﻿// Import Quicksand font from Google Fonts
 @import url('https://fonts.googleapis.com/css2?family=Quicksand:wght@300;400;500;600;700&display=swap');
 
 // Import additional styles
@@ -806,7 +806,7 @@ body:not(.enable-online-sidebar) {
     gap: 8px;
     z-index: 1;
     width: 200px;
-    padding-top: 10px;
+    padding-top: 25px;
 
     .user-card-avatar {
       width: 90px;
@@ -863,39 +863,31 @@ body:not(.enable-online-sidebar) {
 
     .user-info {
       .display-name {
-        color: #ffffff;
-        font-size: 18px;
-        font-weight: 700;
-        margin: 0;
-        line-height: 1.2;
-      }
-
-      .username {
-        color: #b9bbbe;
-        font-size: 12px;
-        margin: 2px 0 8px 0;
+        font-size: 17px;
+        margin: 0 0 2px 0;
         display: block;
       }
 
+      .username {
+        font-size: 13px;
+        margin: 0 0 12px 0;
+        display: block;
+        line-height: 1.2;
+      }
+
       .posts-stat {
-        padding: 8px 10px;
-        background: rgba(88, 101, 242, 0.1);
-        border: 1px solid rgba(88, 101, 242, 0.3);
-        border-radius: 8px;
-        text-align: center;
-        max-width: 140px;
+        padding: 12px 14px;
+        width: 170px;
+        margin-left: -15px;
 
         .stat-value {
-          font-size: 20px;
-          font-weight: 700;
-          color: #ffffff;
-          display: block;
+          font-size: 26px;
+          margin-bottom: 4px;
         }
 
         .stat-label {
-          font-size: 10px;
-          color: #b9bbbe;
-          text-transform: uppercase;
+          font-size: 11px;
+          letter-spacing: 0.5px;
         }
       }
     }
