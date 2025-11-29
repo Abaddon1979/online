@@ -886,11 +886,12 @@ body:not(.enable-online-sidebar) {
       .posts-stat {
         padding: 15px 14px;
         width: 170px;
-        margin-left: -15px;
+        margin-left: -11px; /* Moved 4px to the right from -15px */
         margin-bottom: 15px; /* Space between posts box and roles */
-        background: #111216;
+        background: rgba(255, 255, 255, 0.05); /* Glass effect background */
+        backdrop-filter: blur(10px); /* Glass blur effect */
         border-radius: 8px;
-        border: 1px solid $discord-darkest;
+        border: 1px solid rgba(255, 255, 255, 0.1); /* Lighter border for glass effect */
         text-align: center;
 
         .stat-value {
