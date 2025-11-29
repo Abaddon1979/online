@@ -817,6 +817,7 @@ body:not(.enable-online-sidebar) {
       padding: 4px;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
       margin-top: 20px; /* Added margin to move avatar down within the card */
+      margin-bottom: 15px; /* Added space below avatar */
 
       img {
         width: 100%;
@@ -863,33 +864,45 @@ body:not(.enable-online-sidebar) {
     }
 
     .user-info {
-      .display-name {
-        font-size: 17px;
-        margin: 0 0 2px 0;
-        display: block;
-      }
+      .username-display {
+        margin-bottom: 15px; /* Space between usernames and posts box */
+        
+        .display-name {
+          font-size: 17px;
+          margin: 0 0 4px 0;
+          display: block;
+          font-weight: 600;
+        }
 
-      .username {
-        font-size: 13px;
-        margin: 0 0 12px 0;
-        display: block;
-        line-height: 1.2;
+        .username {
+          font-size: 13px;
+          margin: 0;
+          display: block;
+          line-height: 1.2;
+          color: #8e9297;
+        }
       }
 
       .posts-stat {
-        padding: 12px 14px;
+        padding: 15px 14px;
         width: 170px;
         margin-left: -15px;
-        margin-top: 10px; /* Added margin to create space between usernames and posts box */
+        margin-bottom: 15px; /* Space between posts box and roles */
+        background: #111216;
+        border-radius: 8px;
+        border: 1px solid $discord-darkest;
+        text-align: center;
 
         .stat-value {
           font-size: 26px;
           margin-bottom: 4px;
+          font-weight: 700;
         }
 
         .stat-label {
           font-size: 11px;
           letter-spacing: 0.5px;
+          text-transform: uppercase;
         }
       }
     }

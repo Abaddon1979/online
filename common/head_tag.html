@@ -83,24 +83,32 @@ api.onPageChange(() => {
       // Only show edit button if viewing own profile
       const editButtonHTML = isOwnProfile ? '<button class="edit-background-btn" title="Change Background">' + editIconSVG + '</button>' : '';
       
-      // Reordered username display: display name first, then @username
-      leftSection.innerHTML = '<div class="user-card-avatar"><img src="' + avatar + '"><div class="status-badge"></div>' + editButtonHTML + '</div><div class="user-info"><h2 class="display-name">' + (user.name || user.username) + '</h2><p class="username">@' + user.username + '</p><div class="posts-stat"><span class="stat-value">' + (user.post_count || 0) + '</span><span class="stat-label">Posts</span></div></div>' + rolesHTML;
+      // Reordered username display: display name first, then @username - now properly stacked
+      leftSection.innerHTML = '<div class="user-card-avatar"><img src="' + avatar + '"><div class="status-badge"></div>' + editButtonHTML + '</div><div class="user-info"><div class="username-display"><h2 class="display-name">' + (user.name || user.username) + '</h2><p class="username">@' + user.username + '</p></div><div class="posts-stat"><span class="stat-value">' + (user.post_count || 0) + '</span><span class="stat-label">Posts</span></div></div>' + rolesHTML;
       
       // Status editing only for own profile
       const statusTextarea = isOwnProfile ? 
-        '<textarea placeholder="Set your status..." ' + (isOwnProfile ? '' : 'readonly') + '>' + savedStatus + '</textarea>' :
+        '<textarea placeholder="Set your status..." >' + savedStatus + '</textarea>' :
         '<textarea placeholder="User status..." readonly>' + savedStatus + '</textarea>';
       
       rightSection.innerHTML = '<div class="status-box"><div class="status-label">Status</div>' + statusTextarea + '</div><div class="user-actions"><a href="/new-message?username=' + user.username + '&type=chat" class="btn btn-primary">💬 Chat</a><a href="/new-message?username=' + user.username + '" class="btn btn-secondary">✉️ Message</a><a href="/u/' + user.username + '" class="btn btn-secondary">👤 Profile</a></div>';
       
-      // Only wire up edit button and status if it's own profile
-      if (isOwnProfile) {
-        const editBtn = card.querySelector('.edit-background-btn');
-        if (editBtn) editBtn.onclick = (e) => { e.stopPropagation(); openTenorPicker(username, card); };
-        
-        const statusTextareaEl = card.querySelector('.status-box textarea');
-        if (statusTextareaEl) statusTextareaEl.addEventListener('input', function() { localStorage.setItem('user_status_' + username, this.value); });
-      }
+      // Wire up edit button and status after elements are created
+      setTimeout(() => {
+        // Only wire up edit button if it's own profile
+        if (isOwnProfile) {
+          const editBtn = card.querySelector('.edit-background-btn');
+          if (editBtn) editBtn.onclick = (e) => { e.stopPropagation(); openTenorPicker(username, card); };
+          
+          const statusTextareaEl = card.querySelector('.status-box textarea');
+          if (statusTextareaEl) {
+            statusTextareaEl.removeAttribute('readonly');
+            statusTextareaEl.addEventListener('input', function() { 
+              localStorage.setItem('user_status_' + username, this.value); 
+            });
+          }
+        }
+      }, 100);
       
       closeBtn.onclick = (e) => { e.stopPropagation(); document.querySelectorAll('.discord-user-card-backdrop, .discord-user-card').forEach(el => el.remove()); };
     });
