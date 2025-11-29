@@ -115,7 +115,7 @@ api.onPageChange(() => {
           data.results.forEach(gif => {
             const img = document.createElement('img');
             img.src = gif.media_formats.tinygif?.url || gif.media_formats.gif.url;
-            img.dataset.fullUrl = gif.media_formats.web p?.url || gif.media_formats.gif?.url;
+            img.dataset.fullUrl = gif.media_formats.webp?.url || gif.media_formats.gif?.url;
             img.onclick = () => {
               cardElement.style.setProperty('--user-card-bg', 'url(' + img.dataset.fullUrl + ')');
               cardElement.setAttribute('data-bg-url', img.dataset.fullUrl);
