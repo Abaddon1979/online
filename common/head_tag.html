@@ -109,13 +109,50 @@ api.onPageChange(() => {
         user.avatar_template.replace('{size}', '256');
 
       const body = card.querySelector('.user-card-body');
-      if (!body) {
+      const banner = card.querySelector('.user-card-banner');
+      if (!body || !banner) {
         return;
       }
 
-      // Final content with close button preserved
+      // Load custom background if saved
+      const savedBg = localStorage.getItem('user_card_bg_' + user.username);
+      if (savedBg) {
+        banner.style.backgroundImage = 'url(' + savedBg + ')';
+      }
+
+      // Get user's actual badges
+      const badgesHTML = user.featured_user_badge_ids && user.featured_user_badge_ids.length > 0
+        ? '<div class="badges-section">' +
+            '<div class="section-title">Badges</div>' +
+            '<div class="badges-list">' +
+              user.featured_user_badge_ids.slice(0, 5).map(() => 
+                '<div class="badge-chip">' +
+                  '<span>🏅</span>' +
+                  '<span>Badge</span>' +
+                '</div>'
+              ).join('') +
+            '</div>' +
+          '</div>'
+        : '';
+
+      // Groups as chips
+      const groupsHTML = user.groups && user.groups.length > 0
+        ? '<div class="groups-section">' +
+            '<div class="section-title">Roles</div>' +
+            '<div class="groups-list">' +
+              user.groups.slice(0, 6).map(g =>
+                '<a href="/g/' + g.name + '" class="group-chip">' +
+                  (g.display_name || g.name) +
+                '</a>'
+              ).join('') +
+            '</div>' +
+          '</div>'
+        : '';
+
+      // Final content - modern layout with only Posts stat
       body.innerHTML =
         '<button class="user-card-close" type="button">×</button>' +
+        '<button class="edit-background-btn" title="Change Background">🎨</button>' +
         '<div class="user-card-avatar">' +
           '<img src="' + avatar + '">' +
           '<div class="status-badge"></div>' +
@@ -127,64 +164,105 @@ api.onPageChange(() => {
             ? '<span class="title-badge">' + user.title + '</span>'
             : '') +
         '</div>' +
-        '<div class="user-body-content">' +
-          '<div>' +
-            '<div class="stats-section">' +
-              '<div class="section-title">Stats</div>' +
-              '<div class="stats-grid">' +
-                '<div class="stat-box">' +
-                  '<span class="stat-value">' + (user.post_count || 0) + '</span>' +
-                  '<span class="stat-label">Posts</span>' +
-                '</div>' +
-                '<div class="stat-box">' +
-                  '<span class="stat-value">' + (user.like_count || 0) + '</span>' +
-                  '<span class="stat-label">Likes</span>' +
-                '</div>' +
-                '<div class="stat-box">' +
-                  '<span class="stat-value">' + (user.solved_count || 0) + '</span>' +
-                  '<span class="stat-label">Solutions</span>' +
-                '</div>' +
-              '</div>' +
-            '</div>' +
-          '</div>' +
-          '<div>' +
-            (user.badge_count > 0
-              ? '<div class="badges-section">' +
-                  '<div class="section-title">Badges</div>' +
-                  '<div class="badges-list">' +
-                    '<div class="badge-chip">' +
-                      '<span>🏅</span>' +
-                      '<span>' + user.badge_count + ' Badge' +
-                        (user.badge_count !== 1 ? 's' : '') +
-                      '</span>' +
-                    '</div>' +
-                  '</div>' +
-                '</div>'
-              : '') +
-            (user.groups && user.groups.length > 0
-              ? '<div class="groups-section">' +
-                  '<div class="section-title">Groups</div>' +
-                  '<div class="groups-list">' +
-                    user.groups
-                      .slice(0, 4)
-                      .map(g =>
-                        '<a href="/g/' + g.name + '" class="group-chip">' +
-                          (g.display_name || g.name) +
-                        '</a>'
-                      )
-                      .join('') +
-                  '</div>' +
-                '</div>'
-              : '') +
+        '<div class="stats-section">' +
+          '<div class="stat-box">' +
+            '<span class="stat-value">' + (user.post_count || 0) + '</span>' +
+            '<span class="stat-label">Posts</span>' +
           '</div>' +
         '</div>' +
+        badgesHTML +
+        groupsHTML +
         '<div class="user-actions">' +
           '<a href="/new-message?username=' + user.username + '&type=chat" class="btn btn-primary">💬 Chat</a>' +
           '<a href="/new-message?username=' + user.username + '" class="btn btn-secondary">✉️ Message</a>' +
           '<a href="/u/' + user.username + '" class="btn btn-secondary">👤 Profile</a>' +
         '</div>';
 
+      // Add edit background button functionality
+      const editBtn = body.querySelector('.edit-background-btn');
+      if (editBtn) {
+        editBtn.onclick = function(e) {
+          e.stopPropagation();
+          openTenorPicker(username, banner);
+        };
+      }
+
+      // Move edit button to banner
+      const bannerEl = card.querySelector('.user-card-banner');
+      if (bannerEl && editBtn) {
+        bannerEl.appendChild(editBtn);
+      }
+
       wireClose();
+    });
+  }
+
+  function openTenorPicker(username, bannerElement) {
+    // Create Tenor picker modal
+    const modal = document.createElement('div');
+    modal.className = 'tenor-picker-modal';
+    modal.innerHTML =
+      '<div class="tenor-header">' +
+        '<h3>Select Background</h3>' +
+        '<button class="tenor-close">×</button>' +
+      '</div>' +
+      '<div class="tenor-search">' +
+        '<input type="text" placeholder="Search for GIFs..." class="tenor-search-input">' +
+      '</div>' +
+      '<div class="tenor-results"></div>';
+
+    document.body.appendChild(modal);
+
+    const closeBtn = modal.querySelector('.tenor-close');
+    const searchInput = modal.querySelector('.tenor-search-input');
+    const resultsDiv = modal.querySelector('.tenor-results');
+
+    closeBtn.onclick = () => modal.remove();
+
+    // Tenor API key - you'll need to get your own from https://tenor.com/developer/keyregistration
+    const TENOR_API_KEY = 'AIzaSyAyimkuYQYF_FXVALexPuGQctUWRURdCYQ'; // Replace with your key
+    
+    function searchTenor(query) {
+      const searchQuery = query || 'anime scenery';
+      const limit = 20;
+      const url = `https://tenor.googleapis.com/v2/search?q=${encodeURIComponent(searchQuery)}&key=${TENOR_API_KEY}&limit=${limit}&media_filter=minimal`;
+
+      fetch(url)
+        .then(response => response.json())
+        .then(data => {
+          resultsDiv.innerHTML = '';
+          if (data.results) {
+            data.results.forEach(gif => {
+              const img = document.createElement('img');
+              // Use tinygif for preview, but store the full webp URL
+              img.src = gif.media_formats.tinygif.url;
+              img.dataset.fullUrl = gif.media_formats.webp?.url || gif.media_formats.gif.url;
+              img.onclick = () => {
+                const bgUrl = img.dataset.fullUrl;
+                bannerElement.style.backgroundImage = 'url(' + bgUrl + ')';
+                localStorage.setItem('user_card_bg_' + username, bgUrl);
+                modal.remove();
+              };
+              resultsDiv.appendChild(img);
+            });
+          }
+        })
+        .catch(err => {
+          console.error('Tenor search error:', err);
+          resultsDiv.innerHTML = '<p style="color:#dcddde;text-align:center;padding:20px;">Failed to load GIFs</p>';
+        });
+    }
+
+    // Initial search
+    searchTenor('');
+
+    // Search on input
+    let searchTimeout;
+    searchInput.addEventListener('input', (e) => {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => {
+        searchTenor(e.target.value);
+      }, 500);
     });
   }
 
