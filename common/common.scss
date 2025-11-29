@@ -60,21 +60,23 @@ $discord-hover: #3c3f45;
   align-items: flex-start !important;
 
   .chat-message-avatar {
-    border-radius: 50%;
     width: 40px !important;
     height: 40px !important;
+    aspect-ratio: 1 / 1 !important;
+    border-radius: 50% !important;
     margin-right: 16px !important;
     flex-shrink: 0 !important;
-    margin-top: 0 !important;
-    margin-bottom: 4px !important; /* slight bottom space to visually push avatar up */
-    overflow: hidden; /* ensure circle crop */
+    margin-top: -20px !important; /* move avatar up visually */
+    margin-bottom: 0 !important;
+    overflow: hidden !important; /* ensure perfect circle crop */
   }
 
   .chat-message-avatar img {
     width: 100% !important;
     height: 100% !important;
+    aspect-ratio: 1 / 1 !important;
     border-radius: 50% !important;
-    object-fit: cover;
+    object-fit: cover !important;
     display: block;
   }
 
